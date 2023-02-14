@@ -1,7 +1,7 @@
 library(shiny)
 library(tidyverse)
 
-ui <- fluidPage(
+ui <- fluidPage(theme="ocean.css",
   navbarPage("Black Bear Aware", #navbarPage allows us to create our tabs
              tabPanel("Thing 1", #this is how we add tabs.
                       sidebarLayout(
