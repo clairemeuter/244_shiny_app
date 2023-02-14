@@ -10,7 +10,7 @@
 library(shiny)
 library(tidyverse)
 
-# Define UI for application that draws a histogram
+# Define UI for application that displays humna-black bear conflict
 ui <- fluidPage(theme="ocean.css",
                 navbarPage("Black Bear Aware", #navbarPage allows us to create our tabs
                            tabPanel("Thing 1", #this is how we add tabs.
@@ -33,6 +33,10 @@ ui <- fluidPage(theme="ocean.css",
                 ) # end navbarPAge
 ) #end ui
 
+
+
+
+
 # Define server logic required to draw a histogram
 server <- function(input, output) {
 
@@ -48,5 +52,7 @@ server <- function(input, output) {
     })
 }
 
+
 # Run the application
+
 shinyApp(ui = ui, server = server)
