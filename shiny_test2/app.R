@@ -17,13 +17,13 @@ ui <- fluidPage(theme="ocean.css",
                                     sidebarLayout(
                                       sidebarPanel("WIDGETS",
                                                    checkboxGroupInput(
-                                                     inputId = "pick_species",
-                                                     label = "Choose species:",
-                                                     choices = unique(starwars$species) #because we've typed unique here, we don't need to list out the species. WE can do the same thing for types of conflict
+                                                     inputId = "pick_category",
+                                                     label = "Pick conflict category:",
+                                                     choices = unique(WIR_clean$confirmed_category) #because we've typed unique here, we don't need to list out the category of conflict
                                                    )
                                       ), #End sidebarPanel widgets
                                       mainPanel("OUTPUT!",
-                                                plotOutput("sw_plot")
+                                                plotOutput("bear_plot")
                                       )
                                     ) #end sidebar (tab1) layout
                            ), #end tabpanel thing 1
@@ -40,16 +40,19 @@ ui <- fluidPage(theme="ocean.css",
 # Define server logic required to draw a histogram
 server <- function(input, output) {
 
-    output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
+  bear_reactive <- reactive({
+    x<- WIR_clean %>%
+      filter(confirmed_category %in% input$pick_species) #What does this do? When it sees the input ID "pick_species" it will filter the species in the starwars dataframe by the selected species in the widget
+    return(x)
+  }) #End bear_reactive
 
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white',
-             xlab = 'Waiting time to next eruption (in mins)',
-             main = 'Histogram of waiting times')
-    })
+
+  output$bear_plot <- renderPlot(
+    ggplot(data = bear_reactive(), aes(x=confirmed_category)) +
+      geom_bar()
+  ) #end output$bear_plot
+
+
 }
 
 

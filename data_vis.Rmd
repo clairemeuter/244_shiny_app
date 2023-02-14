@@ -1,0 +1,17 @@
+---
+title: "data_vis"
+author: "Claire Meuter"
+date: "2023-02-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+```{r}
+ ggplot(data = WIR_clean, aes(x=confirmed_category)) +
+      geom_bar()
+```
+
