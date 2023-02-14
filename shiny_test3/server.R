@@ -8,10 +8,9 @@
 #
 
 library(shiny)
-<<<<<<< HEAD
 library(tidyverse)
-=======
->>>>>>> 80baebe59cea15123c59bcd8a2524855a61cf385
+
+
 
 # Define server logic required to draw a histogram
 function(input, output, session) {
@@ -19,11 +18,9 @@ function(input, output, session) {
     output$distPlot <- renderPlot({
 
         # generate bins based on input$bins from ui.R
-<<<<<<< HEAD
-        x    <- WIR_clean[, 2]
-=======
+
         x    <- faithful[, 2]
->>>>>>> 80baebe59cea15123c59bcd8a2524855a61cf385
+
         bins <- seq(min(x), max(x), length.out = input$bins + 1)
 
         # draw the histogram with the specified number of bins
