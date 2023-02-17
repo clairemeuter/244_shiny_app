@@ -19,11 +19,7 @@ ui <- fluidPage(theme="ocean.css",
                       ), #end tabpanel thing 1
 
              tabPanel("Conflict Exploration"),
-             tabPanel("Mapping Conflict",
-                      mainPanel("OUTPUT MAP!",
-                                plotOutput("conflict_map"))
-                      ), # end map conflict panel
-
+             tabPanel("Mapping Conflict"),
              tabPanel("Mapping Projections")
 
 
