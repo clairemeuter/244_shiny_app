@@ -3,7 +3,7 @@ library(tidyverse)
 
 ui <- fluidPage(theme="ocean.css",
   navbarPage("Black Bear Aware", #navbarPage allows us to create our tabs
-             tabPanel("Thing 1", #this is how we add tabs.
+             tabPanel("Landing Page", #this is how we add tabs.
                       sidebarLayout(
                         sidebarPanel("WIDGETS",
                         checkboxGroupInput(
@@ -17,8 +17,11 @@ ui <- fluidPage(theme="ocean.css",
                                   )
                       ) #end sidebar (tab1) layout
                       ), #end tabpanel thing 1
-             tabPanel("Thing 2"),
-             tabPanel("Thing 3")
+
+             tabPanel("Conflict Exploration"),
+             tabPanel("Mapping Conflict"),
+             tabPanel("Mapping Projections")
+
 
     ) # end navbarPAge
 ) #end ui
