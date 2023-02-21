@@ -23,14 +23,12 @@ ui <- fluidPage(theme="ocean.css",
              tabPanel("Mapping Conflict",
                       sidebarPanel("Conflict occurances",
                                    selectInput("selectcounty", label = "Select County",
-                                               choices = list("Choice 1" = 1, "Choice 2" = 2, "Choice 3" = 3),
-                                               selected = 1),
+                                               choices = unique(bear_data$country),
+                                               )
                                    dateInput("year", label = "Date input", format = "YYYY", startview = "year"),
 
                                   selectInput("select_conflict", label = "Type of Conflict",
-                                               choices = list("A", "B", "C"),
-                                               selected = "A")
-
+                                               choices = unique(bear_data$conflict))
 
                       ), # end sidebar panel
                       mainPanel("Output map",
