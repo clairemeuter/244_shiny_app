@@ -2,6 +2,8 @@ library(shiny)
 library(tidyverse)
 library(lubridate)
 
+bear_data <- read_csv("data/WIR_clean.csv")
+
 ui <- fluidPage(theme="ocean.css",
   navbarPage("Black Bear Aware", #navbarPage allows us to create our tabs
              tabPanel("Landing Page", #this is how we add tabs.
@@ -23,17 +25,16 @@ ui <- fluidPage(theme="ocean.css",
              tabPanel("Mapping Conflict",
                       sidebarPanel("Conflict occurances",
                                    selectInput("selectcounty", label = "Select County",
-                                               choices = unique(bear_data$country),
-                                               )
+                                               choices = unique(bear_data$county_name)
+                                               ), # end select input
                                    dateInput("year", label = "Date input", format = "YYYY", startview = "year"),
-
                                   selectInput("select_conflict", label = "Type of Conflict",
-                                               choices = unique(bear_data$conflict))
+                                               choices = unique(bear_data$confirmed_category))
 
                       ), # end sidebar panel
                       mainPanel("Output map",
                                 plotOutput("conflict_map")
-                      )
+                      ) # end main panel
 
                       ), # end  mappiing conflict tab panel
 
@@ -56,15 +57,15 @@ server <- function(input, output){
   ) #end output$sw_plot
 
   county_reactive <- reactive({
-    x<- data %>%
-      filter(county %in% input$selectcounty)
+    x<- bear_data %>%
+      filter(county_name %in% input$selectcounty)
     return(x)
   }) #End sw_reactive
 
   # select county box
   output$conflict_map <- renderPlot(
     ggplot(data = county_reactive(), aes(lat, long)) +
-      geom_point(aes(color = conflict_type))
+      geom_point(aes(color = confirmed_category))
            ) #end output mapping conflict map
 }
 
