@@ -12,7 +12,7 @@ ui <- fluidPage(theme="ocean.css",
                                                    checkboxGroupInput(
                                                      inputId = "pick_species",
                                                      label = "Choose species:",
-                                                     choices = unique(starwars$species) #because we've typed unique here, we don't need to list out the species. WE can do the same thing for types of conflict
+                                                     choices = unique(bear_data$confirmed_category) #because we've typed unique here, we don't need to list out the species. WE can do the same thing for types of conflict
                                                    )
                                       ), #End sidebarPanel widgets
                                       mainPanel("OUTPUT!",
@@ -21,7 +21,20 @@ ui <- fluidPage(theme="ocean.css",
                                     ) #end sidebar (tab1) layout
                            ), #end tabpanel thing 1
 
-                           tabPanel("Conflict Exploration"),
+                           tabPanel("Conflict Exploration", #this is how we add tabs.
+                                    sidebarLayout(
+                                      sidebarPanel("WIDGETS",
+                                                   checkboxGroupInput(
+                                                     inputId = "pick_category",
+                                                     label = "Choose conflict type:",
+                                                     choices = unique(bear_data$species) #because we've typed unique here, we don't need to list out the species. WE can do the same thing for types of conflict
+                                                   )
+                                      ), #End sidebarPanel widgets
+                                      mainPanel("OUTPUT!",
+                                                plotOutput("sw_plot")
+                                      )
+                                    ) #end sidebar (tab1) layout
+                           ),
                            tabPanel("Mapping Conflict",
                                     sidebarPanel("Conflict occurances",
                                                  selectInput("selectcounty", label = "Select County",
