@@ -15,8 +15,7 @@ ui <- fluidPage(theme="ocean.css",
                                                      choices = unique(bear_data$confirmed_category) #because we've typed unique here, we don't need to list out the species. WE can do the same thing for types of conflict
                                                    )
                                       ), #End sidebarPanel widgets
-                                      mainPanel("OUTPUT!",
-                                                plotOutput("sw_plot")
+                                      mainPanel(plotOutput("sw_plot")
                                       )
                                     ) #end sidebar (tab1) layout
                            ), #end tabpanel thing 1
@@ -27,11 +26,10 @@ ui <- fluidPage(theme="ocean.css",
                                                    checkboxGroupInput(
                                                      inputId = "pick_category",
                                                      label = "Choose conflict type:",
-                                                     choices = unique(bear_data$species) #because we've typed unique here, we don't need to list out the species. WE can do the same thing for types of conflict
+                                                     choices = unique(bear_data$confirmed_category) #because we've typed unique here, we don't need to list out the species. WE can do the same thing for types of conflict
                                                    )
                                       ), #End sidebarPanel widgets
-                                      mainPanel("OUTPUT!",
-                                                plotOutput("sw_plot")
+                                      mainPanel(plotOutput("conflict_plot")
                                       )
                                     ) #end sidebar (tab1) layout
                            ),
@@ -68,6 +66,21 @@ server <- function(input, output){
     ggplot(data = sw_reactive(),aes(x=mass, y = height)) +
       geom_point(aes(color=species))
   ) #end output$sw_plot
+
+  # conflict ggplot
+  conflict_reactive <- reactive({
+    x<- bear_data %>%
+      filter(confirmed_category %in% input$pick_category)
+    return(x)
+  }) #End conflict_reactive
+
+  # select county box
+  output$conflict_plot <- renderPlot(
+    ggplot(data = conflict_reactive(), aes(x=confirmed_category)) +
+      geom_bar()
+  ) #end output plotting conflict map
+
+
 
   county_reactive <- reactive({
     x<- bear_data %>%
