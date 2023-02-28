@@ -6,19 +6,7 @@ bear_data <- read_csv("data/WIR_clean.csv")
 
 ui <- fluidPage(theme="ocean.css",
                 navbarPage("Black Bear Aware", #navbarPage allows us to create our tabs
-                           tabPanel("Landing Page", #this is how we add tabs.
-                                    sidebarLayout(
-                                      sidebarPanel("WIDGETS",
-                                                   checkboxGroupInput(
-                                                     inputId = "pick_species",
-                                                     label = "Choose species:",
-                                                     choices = unique(bear_data$confirmed_category) #because we've typed unique here, we don't need to list out the species. WE can do the same thing for types of conflict
-                                                   )
-                                      ), #End sidebarPanel widgets
-                                      mainPanel(plotOutput("sw_plot")
-                                      )
-                                    ) #end sidebar (tab1) layout
-                           ), #end tabpanel thing 1
+                           tabPanel("Landing Page", p("This project, in coorporation with California Department of Fish and Wildlife, explores human-black bear conflict across California. By analyzing spatial data on suitable bear habitat, human settlement locations, drought and fire extent and severity, and human-wildlife incident reports, we will develop a predictive model to assist wildlife managers in anticipating future conflict.")), #end tabpanel thing 1
 
                            tabPanel("Conflict Exploration", #this is how we add tabs.
                                     sidebarLayout(
