@@ -3,6 +3,7 @@ library(tidyverse)
 library(sf)
 library(tmap)
 library(here)
+library(lubridate)
 
 bear_data <- read_sf("data/WIR_clean.csv") %>%
   mutate(date = lubridate::mdy_hm(incident_date),
