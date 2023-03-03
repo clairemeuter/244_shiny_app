@@ -1,8 +1,19 @@
 library(shiny)
 library(tidyverse)
-library(lubridate)
+library(sf)
+library(tmap)
+library(here)
 
-bear_data <- read_csv("data/WIR_clean.csv")
+bear_data <- read_sf("data/WIR_clean.csv") %>%
+  mutate(date = lubridate::mdy_hm(incident_date),
+         year = year(date))
+
+
+ca_counties_shp <- read_sf(here("data/CA_Counties/CA_counties_TIGER2016.shp")) %>%
+  janitor::clean_names() %>%
+  select(name)
+
+#st_crs(ca_counties_shp) 3857
 
 ui <- fluidPage(theme="ocean.css",
                 navbarPage("Black Bear Aware", #navbarPage allows us to create our tabs
@@ -14,11 +25,12 @@ ui <- fluidPage(theme="ocean.css",
                                                    checkboxGroupInput(
                                                      inputId = "pick_category",
                                                      label = "Choose conflict type:",
-                                                     choices = unique(bear_data$confirmed_category) #because we've typed unique here, we don't need to list out the species. WE can do the same thing for types of conflict
+                                                     choices = unique(bear_data$confirmed_category), #because we've typed unique here, we don't need to list out the species. WE can do the same thing for types of conflict
+                                                     selected = c("Sighting", "Depredation")
                                                    )
                                       ), #End sidebarPanel widgets
                                       mainPanel(plotOutput("conflict_plot")
-                                      )
+                                      ) # endconflict exploration mainPanel
                                     ) #end sidebar (tab1) layout
                            ),
                            tabPanel("Mapping Conflict",
@@ -26,9 +38,13 @@ ui <- fluidPage(theme="ocean.css",
                                                  selectInput("selectcounty", label = "Select County",
                                                              choices = unique(bear_data$county_name)
                                                  ), # end select input
-                                                 dateInput("year", label = "Date input", format = "YYYY", startview = "year"),
+                                                 selectInput("select_year", label = "Select Year",
+                                                                    choices = unique(bear_data$year)),
+
                                                  selectInput("select_conflict", label = "Type of Conflict",
-                                                             choices = unique(bear_data$confirmed_category))
+                                                             choices = unique(bear_data$confirmed_category)),
+
+                                                 actionButton(inputId = "map_btn", label = "Map")
 
                                     ), # end sidebar panel
                                     mainPanel("Output map",
@@ -55,32 +71,64 @@ server <- function(input, output){
       geom_point(aes(color=species))
   ) #end output$sw_plot
 
-  # conflict ggplot
+  # conflict selection for exploration
   conflict_reactive <- reactive({
-    x<- bear_data %>%
-      filter(confirmed_category %in% input$pick_category)
-    return(x)
+    validate(need(try(length(input$pick_category) > 0),
+                  "please make selection")) # error checking
+    y<- bear_data %>%
+      filter(confirmed_category %in% input$pick_category) %>%
+      group_by(year) # group to graph counts over time
+    return(y)
   }) #End conflict_reactive
 
-  # select county box
+
+  # output conflict graph
   output$conflict_plot <- renderPlot(
-    ggplot(data = conflict_reactive(), aes(x=confirmed_category)) +
-      geom_bar()
+    ggplot(data = bear_data, aes(x = year)) +
+      geom_bar(data = conflict_reactive(), aes(fill = confirmed_category))
   ) #end output plotting conflict map
 
 
 
-  county_reactive <- reactive({
-    x<- bear_data %>%
+  conflict_map_inputs <- reactive({
+    validate(need(try(length(input$select_conflict) > 0),
+                  "please make selection")) # error check
+    req(input$map_btn) # button has to be pressed to make map
+    g <- bear_data %>%
+      filter(confirmed_category %in% input$select_conflict) %>%
+      filter(year %in% input$select_year) %>%
       filter(county_name %in% input$selectcounty)
-    return(x)
-  }) #End sw_reactive
+    return(g)
+  })
 
-  # select county box
-  output$conflict_map <- renderPlot(
-    ggplot(data = county_reactive(), aes(lat, long)) +
-      geom_point(aes(color = confirmed_category))
-  ) #end output mapping conflict map
+
+output$conflict_map <- renderPlot({
+  req(data()) # one progress bar once inputs are complete
+  ggplot() +
+    geom_sf(data = ca_counties_shp, color = "white") +
+    geom_sf(data = conflict_map_inputs(), aes(x = longtitude, y = latitude))
+}
+)
+
+# progress bar for mapping
+data <- eventReactive(input$map_btn, {
+  withProgress(message = "Making map", value = 0, {
+    for (i in 1:10) {
+      incProgress(1 / 10)
+      Sys.sleep(0.5)
+    }
+    #runif(1)
+  })
+})
+
+
+#  county_reactive <- reactive({
+ #   county<- bear_data %>%
+#      filter(county_name %in% input$selectcounty)
+#    return(county)
+ # }) #End sw_reactive
+
+
 }
 
 shinyApp(ui=ui, server = server)
