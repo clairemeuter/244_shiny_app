@@ -1,12 +1,10 @@
 
-/* importing fancy fonts from google fonts */
-@import url(https://fonts.googleapis.com/css?family=Quicksand&display=swap')
+import url(https://fonts.googleapis.com/css?family=Quicksand&display=swap')
 
 body{
   background-color: darkolivegreen;
 }
 
-/* changing header text to imported font */
 h1 {
   font-family: 'Quicksand', sans-serif;
   font-weight: 700;
