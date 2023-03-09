@@ -6,7 +6,7 @@ library(here)
 
 bear_data <- read_sf("data/WIR_clean.csv") %>%
   mutate(date = lubridate::mdy_hm(incident_date),
-         year = year(date))
+         year = lubridate::year(date))
 
 
 ca_counties_shp <- read_sf(here("data/CA_Counties/CA_counties_TIGER2016.shp")) %>%
