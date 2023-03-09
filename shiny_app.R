@@ -3,6 +3,7 @@ library(tidyverse)
 library(sf)
 library(tmap)
 library(here)
+library(lubridate)
 
 bear_data <- read_sf("data/WIR_clean.csv") %>%
   mutate(date = lubridate::mdy_hm(incident_date),
@@ -17,11 +18,20 @@ ca_counties_shp <- read_sf(here("data/CA_Counties/CA_counties_TIGER2016.shp")) %
 
 ui <- fluidPage(theme="ocean.css",
                 navbarPage("Black Bear Aware", #navbarPage allows us to create our tabs
-                           tabPanel("Landing Page", p("This project, in coorporation with California Department of Fish and Wildlife, explores human-black bear conflict across California. By analyzing spatial data on suitable bear habitat, human settlement locations, drought and fire extent and severity, and human-wildlife incident reports, we will develop a predictive model to assist wildlife managers in anticipating future conflict.")), #end tabpanel thing 1
+                           tabPanel("Landing Page",
+                                    h4(p("About the Project")),
+                                    p("This project, in coorporation with California Department of Fish and Wildlife, explores human-black bear conflict across California. By analyzing spatial data on suitable bear habitat, human settlement locations, drought and fire extent and severity, and human-wildlife incident reports, we will develop a predictive model to assist wildlife managers in anticipating future conflict."),
+                                    p("Information about CDFW"),
+                                    p("Info about data"),
+                                    br(),
+                                    p("For more information on this project, see the",  a("UCSB's Bren School Master's Directory", href = 'https://bren.ucsb.edu/projects/black-bear-aware-predicting-human-black-bear-conflict-likelihood-changing-climate'), "."),
+                                    br(),
+                                    h4(p("Background on Claire, Katheryn, and Grace :)"))
+                                    ), #end tabpanel thing 1
 
                            tabPanel("Conflict Exploration", #this is how we add tabs.
                                     sidebarLayout(
-                                      sidebarPanel("WIDGETS",
+                                      sidebarPanel("",
                                                    checkboxGroupInput(
                                                      inputId = "pick_category",
                                                      label = "Choose conflict type:",
@@ -29,7 +39,10 @@ ui <- fluidPage(theme="ocean.css",
                                                      selected = c("Sighting", "Depredation")
                                                    )
                                       ), #End sidebarPanel widgets
-                                      mainPanel(plotOutput("conflict_plot")
+                                      mainPanel(h4(p("Wildlife conflict observations by conflict type over time in California")),
+                                                p("Information about each conflict type"),
+                                                p("Maybe some info about the total number of observations? like n="),
+                                        plotOutput("conflict_plot")
                                       ) # endconflict exploration mainPanel
                                     ) #end sidebar (tab1) layout
                            ),
@@ -44,7 +57,7 @@ ui <- fluidPage(theme="ocean.css",
                                                  selectInput("select_conflict", label = "Type of Conflict",
                                                              choices = unique(bear_data$confirmed_category)),
 
-                                                 actionButton(inputId = "map_btn", label = "Map")
+                                                 actionButton(inputId = "map_btn", label = "Generate Map")
 
                                     ), # end sidebar panel
                                     mainPanel("Output map",
@@ -85,7 +98,9 @@ server <- function(input, output){
   # output conflict graph
   output$conflict_plot <- renderPlot(
     ggplot(data = bear_data, aes(x = year)) +
-      geom_bar(data = conflict_reactive(), aes(fill = confirmed_category))
+      geom_bar(data = conflict_reactive(), aes(fill = confirmed_category)) +
+      scale_fill_manual(labels = c("Depredation", "General Nuisance", "Potential Human Conflict", "Sighting"),
+                         values = c("orange", "green2", "dodgerblue", "darkolivegreen"))
   ) #end output plotting conflict map
 
 
@@ -93,7 +108,7 @@ server <- function(input, output){
   conflict_map_inputs <- reactive({
     validate(need(try(length(input$select_conflict) > 0),
                   "please make selection")) # error check
-    req(input$map_btn) # button has to be pressed to make map
+    #req(input$map_btn) # button has to be pressed to make map
     g <- bear_data %>%
       filter(confirmed_category %in% input$select_conflict) %>%
       filter(year %in% input$select_year) %>%
@@ -103,7 +118,7 @@ server <- function(input, output){
 
 
 output$conflict_map <- renderPlot({
-  req(data()) # one progress bar once inputs are complete
+req(conflict_map_inputs())
   ggplot() +
     geom_sf(data = ca_counties_shp, color = "white") +
     geom_sf(data = conflict_map_inputs(), aes(x = longtitude, y = latitude))
