@@ -5,10 +5,15 @@ library(tmap)
 library(here)
 library(lubridate)
 
-bear_data <- read_sf("data/WIR_clean.csv") %>%
+#bear_data_csv
+bear_data_csv <- read_csv("data/WIR_clean.csv") %>%
   mutate(date = lubridate::mdy_hm(incident_date),
          year = year(date))
-
+#bear_data wrangling
+bear_data_sf <- bear_data_csv %>%
+  drop_na(latitude, longitude) %>%
+  select(c(-species, -behavior_observed, -incident_status)) %>%
+  st_as_sf(coords = c("longitude", "latitude"), crs = 3310)
 
 ca_counties_shp <- read_sf(here("data/CA_Counties/CA_counties_TIGER2016.shp")) %>%
   janitor::clean_names() %>%
@@ -35,7 +40,7 @@ ui <- fluidPage(theme="ocean.css",
                                                    checkboxGroupInput(
                                                      inputId = "pick_category",
                                                      label = "Choose conflict type:",
-                                                     choices = unique(bear_data$confirmed_category), #because we've typed unique here, we don't need to list out the species. WE can do the same thing for types of conflict
+                                                     choices = unique(bear_data_csv$confirmed_category), #because we've typed unique here, we don't need to list out the species. WE can do the same thing for types of conflict
                                                      selected = c("Sighting", "Depredation")
                                                    )
                                       ), #End sidebarPanel widgets
@@ -49,13 +54,13 @@ ui <- fluidPage(theme="ocean.css",
                            tabPanel("Mapping Conflict",
                                     sidebarPanel("Conflict occurances",
                                                  selectInput("selectcounty", label = "Select County",
-                                                             choices = unique(bear_data$county_name)
+                                                             choices = unique(bear_data_sf$county_name)
                                                  ), # end select input
                                                  selectInput("select_year", label = "Select Year",
-                                                                    choices = unique(bear_data$year)),
+                                                                    choices = unique(bear_data_sf$year)),
 
                                                  selectInput("select_conflict", label = "Type of Conflict",
-                                                             choices = unique(bear_data$confirmed_category)),
+                                                             choices = unique(bear_data_sf$confirmed_category)),
 
                                                  actionButton(inputId = "map_btn", label = "Generate Map")
 
@@ -88,7 +93,7 @@ server <- function(input, output){
   conflict_reactive <- reactive({
     validate(need(try(length(input$pick_category) > 0),
                   "please make selection")) # error checking
-    y<- bear_data %>%
+    y<- bear_data_csv %>%
       filter(confirmed_category %in% input$pick_category) %>%
       group_by(year) # group to graph counts over time
     return(y)
@@ -97,7 +102,7 @@ server <- function(input, output){
 
   # output conflict graph
   output$conflict_plot <- renderPlot(
-    ggplot(data = bear_data, aes(x = year)) +
+    ggplot(data = bear_data_csv, aes(x = year)) +
       geom_bar(data = conflict_reactive(), aes(fill = confirmed_category)) +
       scale_fill_manual(labels = c("Depredation", "General Nuisance", "Potential Human Conflict", "Sighting"),
                          values = c("orange", "green2", "dodgerblue", "darkolivegreen"))
@@ -109,7 +114,7 @@ server <- function(input, output){
     validate(need(try(length(input$select_conflict) > 0),
                   "please make selection")) # error check
     #req(input$map_btn) # button has to be pressed to make map
-    g <- bear_data %>%
+    g <- bear_data_sf %>%
       filter(confirmed_category %in% input$select_conflict) %>%
       filter(year %in% input$select_year) %>%
       filter(county_name %in% input$selectcounty)
