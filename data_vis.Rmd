@@ -8,10 +8,37 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(sf)
+library(terra)
+library(tmap)
 ```
 
 ```{r}
  ggplot(data = WIR_clean, aes(x=confirmed_category)) +
       geom_bar()
+```
+
+```{r}
+# CA example raster read in 
+ca_raster <- rast(here("data","CARaster_Tiger_Formatted","formattedcaraster.tif"))
+
+bearCRS <- st_crs(ca_raster)
+
+#bear_data_csv
+bear_data_csv <- read_csv("data/WIR_clean.csv") %>%
+  mutate(date = lubridate::mdy_hm(incident_date),
+         year = year(date))
+
+#bear_data wrangling
+bear_data_sf <- bear_data_csv %>%
+  drop_na(latitude, longitude) %>%
+  select(c(-species, -behavior_observed, -incident_status)) %>%
+  st_as_sf(coords = c("latitude","longitude"), crs = bearCRS)
+
+bear_conflict_sf <- read_sf(here("data","conflict_buffered_refined","conflict_buffered_refined.shp"))
+
+tm_shape(bear_conflict_sf) +
+  tm_dots() + 
+  tmap_mode(mode = "view")
 ```
 
