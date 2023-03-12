@@ -5,6 +5,8 @@ library(tmap)
 library(here)
 library(lubridate)
 
+
+
 bear_data <- read_sf("data/WIR_clean.csv") %>%
   mutate(date = lubridate::mdy_hm(incident_date),
          year = year(date))
@@ -90,7 +92,8 @@ server <- function(input, output){
                   "please make selection")) # error checking
     y<- bear_data %>%
       filter(confirmed_category %in% input$pick_category) %>%
-      group_by(year) # group to graph counts over time
+      group_by(year)  # group to graph counts over time
+
     return(y)
   }) #End conflict_reactive
 
@@ -98,9 +101,10 @@ server <- function(input, output){
   # output conflict graph
   output$conflict_plot <- renderPlot(
     ggplot(data = bear_data, aes(x = year)) +
-      geom_bar(data = conflict_reactive(), aes(fill = confirmed_category)) +
-      scale_fill_manual(labels = c("Depredation", "General Nuisance", "Potential Human Conflict", "Sighting"),
-                         values = c("orange", "green2", "dodgerblue", "darkolivegreen"))
+    geom_bar(data = conflict_reactive(), aes(fill = confirmed_category)) +
+    scale_fill_manual(breaks = c("Depredation", "General Nuisance", "Potential Human Conflict", "Sighting"),
+                        values = c("pink", "peru", "dodgerblue", "darkolivegreen")) +
+      labs(y = "Number of observations", title = "Wildlife Conflict Type by Year")
   ) #end output plotting conflict map
 
 
