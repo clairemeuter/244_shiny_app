@@ -69,14 +69,11 @@ ui <- fluidPage(theme="ocean.css",
                            ),
                            tabPanel("Mapping Conflict",
                                     sidebarPanel("Conflict occurances",
-                                                 selectInput("selectcounty", label = "Select County",
+                                                 selectInput("select_county", label = "Select County",
                                                              choices = unique(bear_data_sf$county_name)
                                                  ), # end select input
                                                  selectInput("select_year", label = "Select Year",
                                                                     choices = unique(bear_data_sf$year)),
-
-                                                 selectInput("select_conflict", label = "Type of Conflict",
-                                                             choices = unique(bear_data_sf$confirmed_category)),
 
                                                  actionButton(inputId = "map_btn", label = "Generate Map")
 
@@ -123,16 +120,17 @@ server <- function(input, output){
     validate(need(try(length(input$select_conflict) > 0),
                   "please make selection")) # error check
     #req(input$map_btn) # button has to be pressed to make map
+
     g <- bear_conflict_sf %>%
-      filter(confirmed_category %in% input$select_conflict) %>%
-      filter(year %in% input$select_year) %>%
-      filter(county_name %in% input$selectcounty)
+      filter(county %in% input$select_county) %>%
+      filter(year %in% input$select_year)
+
     return(g)
   })
 
 
   output$conflict_map <- renderTmap({
-  tm_shape(bear_conflict_sf) +
+  tm_shape(conflict_map_inputs) +
       tm_dots() +
     tmap_mode(mode = "view")
 }) #end conflict map output}
