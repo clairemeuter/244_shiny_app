@@ -4,7 +4,7 @@ library(sf)
 library(tmap)
 library(here)
 library(lubridate)
-
+# add terra
 
 #bear_data_csv
 bear_data_csv <- read_csv("data/WIR_clean.csv") %>%
@@ -24,6 +24,8 @@ bear_conflict_sf <- read_sf(
 ca_counties_shp <- read_sf(here("data/CA_Counties/CA_counties_TIGER2016.shp")) %>%
   janitor::clean_names() %>%
   select(name)
+
+# read in data & change label - Katheryn
 
 #st_crs(ca_counties_shp) 3857
 
@@ -146,17 +148,17 @@ server <- function(input, output){
 
 
 # progress bar for mapping
-data <- eventReactive(input$map_btn, {
-  withProgress(message = "Making map", value = 0, {
-    for (i in 1:10) {
-      incProgress(1 / 10)
-      Sys.sleep(0.5)
-    }
-    #runif(1)
-  })
-})
+# data <- eventReactive(input$map_btn, {
+#   withProgress(message = "Making map", value = 0, {
+#     for (i in 1:10) {
+#       incProgress(1 / 10)
+#       Sys.sleep(0.5)
+#     }
+#     #runif(1)
+#   })
+# })
 
-# output conflict probability raster map
+# output conflict probability raster map - Katheryn
 
 # raster_conflict_inputs <- reactive({
 #   validate(need(try(length(input$select_overlap) > 0),
