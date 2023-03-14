@@ -1,16 +1,54 @@
-@import url('https://fonts.googleapis.com/css?family=Quicksand&display=swap');
+/* importing fancy google font */
 
+@import url('https://fonts.googleapis.com/css?family=Questrial&display=swap');
+
+/* updating background color and font type and size */
 body{
   background-color: darkolivegreen;
-}
-
-h1 {
   font-family: 'Quicksand', sans-serif;
   font-weight: 700;
   font-style: normal;
-  font-size: 38px;
+  font-size: 14px;
   line-height: 1.15;
   letter-spacing: -.02em;
   color: antiquewhite;
   -webkit-font-smoothing: antialiased;
 }
+
+h1 {
+  font-family: 'Questrial', sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 14px;
+  line-height: 1.15;
+  letter-spacing: -.02em;
+  color: black;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Style the tab buttons */
+.tablink {
+  background-color: #555;
+  color: white;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  font-size: 17px;
+  width: 25%;
+}
+
+/* Change background color of buttons on hover */
+.tablink:hover {
+  background-color: #777;
+}
+
+/* Set default styles for tab content */
+.tabcontent {
+  color: white;
+  display: none;
+  padding: 50px;
+  text-align: center;
+}
+
