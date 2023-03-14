@@ -5,7 +5,7 @@ library(tmap)
 library(here)
 library(leaflet)
 library(lubridate)
-
+# add terra
 
 #bear_data_csv
 bear_data_csv <- read_csv("data/WIR_clean.csv") %>%
@@ -25,6 +25,8 @@ bear_conflict_sf <- read_sf(
 ca_counties_shp <- read_sf(here("data/CA_Counties/CA_counties_TIGER2016.shp")) %>%
   janitor::clean_names() %>%
   select(name)
+
+# read in data & change label - Katheryn
 
 #st_crs(ca_counties_shp) 3857
 
@@ -72,7 +74,8 @@ ui <- fluidPage(theme="ocean.css",
                                     ) #end sidebar (tab1) layout
                            ),
                            tabPanel("Mapping Conflict",
-                                    sidebarPanel("Conflict occurances",
+
+                                    sidebarPanel("Conflict occurrences",
                                                  selectInput("select_county", label = "Select County",
                                                              choices = unique(bear_data_sf$county_name)
                                                  ), # end select input
@@ -90,11 +93,18 @@ ui <- fluidPage(theme="ocean.css",
 
                            ), # end  mappiing conflict tab panel
 
-                           tabPanel("Mapping Projections")
+                           tabPanel("Mapping Projections",
+                                    sidebarPanel("",
+                                                 radioButtons("select_overlap", label = "Compare Modeled Probability with Actual Conflict Occurrence:",
+                                                              choices = list("Yes" = 1, "No" = 2),
+                                                              selected = 1) # end radio buttons
+                                                 ), # end sidebar panel
+                                    mainPanel("Output map",
+                                              tmapOutput("raster_output_map"))
 
 
                 ) # end navbarPAge
-) #end ui
+)) #end ui
 
 server <- function(input, output){
 
@@ -177,15 +187,37 @@ dataTmap <- reactive({
 
 
 # progress bar for mapping
-data <- eventReactive(input$map_btn, {
-  withProgress(message = "Making map", value = 0, {
-    for (i in 1:10) {
-      incProgress(1 / 10)
-      Sys.sleep(0.5)
-    }
-    #runif(1)
-  })
-})
+# data <- eventReactive(input$map_btn, {
+#   withProgress(message = "Making map", value = 0, {
+#     for (i in 1:10) {
+#       incProgress(1 / 10)
+#       Sys.sleep(0.5)
+#     }
+#     #runif(1)
+#   })
+# })
+
+# output conflict probability raster map - Katheryn
+
+# raster_conflict_inputs <- reactive({
+#   validate(need(try(length(input$select_overlap) > 0),
+#                 "please make selection")) # error check
+#   #req(input$map_btn) # button has to be pressed to make map
+#   m <-
+#   return(m)
+# })
+
+output$raster_conflict_map <- renderTmap({
+  tm_shape(model_conflict_raster) +
+    tm_raster(style= "order", palette = "viridis") + # order =
+    tmap_mode(mode = "view") +
+    tm_layout(legend.outside = TRUE) +
+    tm_layout(title = "Modeled Present Probability of Human-Black Bear Conflict in California",
+              title.size = 1.5, title.position = c("right", "top")) +
+    tm_minimap()
+}) # end conflict probability raster output
+
+
 
 
 #  county_reactive <- reactive({
