@@ -3,6 +3,7 @@ library(tidyverse)
 library(sf)
 library(tmap)
 library(here)
+library(leaflet)
 library(lubridate)
 
 
@@ -31,16 +32,19 @@ ui <- fluidPage(theme="ocean.css",
                 navbarPage("Black Bear Aware", #navbarPage allows us to create our tabs
                            tabPanel("About",
                                     sidebarLayout(
-                                      sidebarPanel(h4("About the project:"),
+                                      sidebarPanel(h4("About the app developers:"),
                                                    p("Grace Bianchi is the coolest."),
-                                                   p("Claire Meuter"),
+                                                   p("Claire Meuter is a second-year MESM student specializing in Conservation Planning.
+                                                     As data manager on the Black Bear Aware team, Claire is excited to combine her group project results with Shiny App creation"),
                                                    p("Katheryn Moya"),
                                                    br(), " ",
                                                    h4("About the Data"),
                                                    br(),"",
-                                                   p("The data")),
-                                      mainPanel(h4(p("About the App")),
-                                                p("This project, in coorporation with California Department of Fish and Wildlife, explores human-black bear conflict across California. By analyzing spatial data on suitable bear habitat, human settlement locations, drought and fire extent and severity, and human-wildlife incident reports, we will develop a predictive model to assist wildlife managers in anticipating future conflict."),
+                                                   p("The data for this project is provided by the ")),
+                                      mainPanel(h4(p("Purpose of the App")),
+                                                p("This project, in coorporation with California Department of Fish and Wildlife,
+                                                  explores human-black bear conflict across California. By analyzing spatial data on
+                                                  suitable bear habitat, human settlement locations, drought and fire extent and severity, and human-wildlife incident reports, we will develop a predictive model to assist wildlife managers in anticipating future conflict."),
                                                 p("Information about CDFW"),
                                                 p("Info about data"),
                                                 br(),
@@ -69,14 +73,13 @@ ui <- fluidPage(theme="ocean.css",
                            ),
                            tabPanel("Mapping Conflict",
                                     sidebarPanel("Conflict occurances",
-                                                 selectInput("selectcounty", label = "Select County",
+                                                 selectInput("select_county", label = "Select County",
                                                              choices = unique(bear_data_sf$county_name)
                                                  ), # end select input
-                                                 selectInput("select_year", label = "Select Year",
-                                                                    choices = unique(bear_data_sf$year)),
 
-                                                 selectInput("select_conflict", label = "Type of Conflict",
-                                                             choices = unique(bear_data_sf$confirmed_category)),
+                                                 selectInput("select_year", label = "Select Year",
+                                                             choices = unique(bear_data_sf$year)
+                                                 ),
 
                                                  actionButton(inputId = "map_btn", label = "Generate Map")
 
@@ -119,22 +122,57 @@ server <- function(input, output){
 
 
 
-  conflict_map_inputs <- reactive({
-    validate(need(try(length(input$select_conflict) > 0),
-                  "please make selection")) # error check
+  #conflict_map_inputs <- reactive({
+   # validate(need(try(length(input$select_conflict) > 0),
+                 # "please make selection")) # error check
     #req(input$map_btn) # button has to be pressed to make map
-    g <- bear_conflict_sf %>%
-      filter(confirmed_category %in% input$select_conflict) %>%
-      filter(year %in% input$select_year) %>%
-      filter(county_name %in% input$selectcounty)
-    return(g)
-  })
 
+ #   county <- ca_counties_shp %>%
+ #     filter(name %in% input$select_county) %>%
+ #     st_set_crs(3310)
+
+
+
+#    g <- bear_conflict_sf %>%
+ #     filter(county %in% input$select_county) %>%
+ #     filter(year %in% input$select_year) %>%
+ #     filter(!is.na(geometry)) %>%
+  #    st_as_sf() %>%
+  #    st_set_crs(3310)
+
+  #  return(g)
+
+ # })
+#county map reactive
+  county <- reactive({
+    ca_counties_shp %>%
+      dplyr::filter(name %in% input$select_county)
+  })
+  #bear points reactive
+  g <- reactive({
+    bear_conflict_sf %>%
+      dplyr::filter(county %in% input$select_county) %>%
+      dplyr::filter(year %in% input$select_year) %>%
+      dplyr::filter(!is.na(geometry))
+  }) #end g reactive
+
+dataTmap <- reactive({
+  sf:st_as_sf(
+    data.frame(
+    type = g()$type,
+    county = g()$count,
+    year = g()$year,
+    geometry = g()$geometry), wkt = "geometry"
+
+  )
+})
 
   output$conflict_map <- renderTmap({
-  tm_shape(bear_conflict_sf) +
-      tm_dots() +
-    tmap_mode(mode = "view")
+    #tm_shape(county) +
+      #tm_polygons(alpha = 0) +
+      tm_shape(dataTmap) +
+      tm_dots()+
+      tmap_mode("view")
 }) #end conflict map output}
 
 

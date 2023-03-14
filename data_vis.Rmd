@@ -136,3 +136,48 @@ tm_shape(bear_conflict_sf) +
 
 ```
 
+
+```{r}
+
+ bear_conflict_df <- bear_conflict_sf %>%
+      filter(county %in% "Kern") %>%
+      filter(year %in% "2020")
+
+g <- st_as_sf(bear_conflict_df, wkt = 'geometry')
+
+    return(g)
+g
+class(g)
+
+plot(g)
+
+tm_shape(g) +
+      tm_dots() +
+    tmap_mode(mode = "view")
+```
+```{r}
+
+   # validate(need(try(length(input$select_conflict) > 0),
+                 # "please make selection")) # error check
+    #req(input$map_btn) # button has to be pressed to make map
+
+    county <- ca_counties_shp %>%
+      filter(name == "Kern") %>% 
+  project(..,ca_raster)
+
+
+
+    g <- bear_conflict_sf %>%
+      filter(county == "Kern") %>%
+      filter(year == "2020") %>%
+      filter(!is.na(geometry)) %>%
+      st_as_sf() 
+
+    tm_shape(county) +
+      tm_polygons(alpha = 0) +
+      tm_shape(g) +
+      tm_dots()+
+      tmap_mode("view")
+```
+
+
