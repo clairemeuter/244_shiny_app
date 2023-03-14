@@ -8,10 +8,66 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(sf)
+library(terra)
+library(tmap)
 ```
 
 ```{r}
  ggplot(data = WIR_clean, aes(x=confirmed_category)) +
       geom_bar()
+```
+
+# Visualizing Conflict Projections - Katheryn
+
+## Present
+```{r}
+# read in raster data
+model_conflict_raster <- rast(here("data","mod3clim_map_squared.tif"))
+
+# check coordinate reference system
+
+model_conflict_CRS <- st_crs(model_conflict_raster)
+
+model_conflict_CRS # ID = EPSG 6414
+
+CA_county_sf <- read_sf(here("data", "ca_counties", "CA_Counties_TIGER2016.shp")) %>% 
+   janitor::clean_names()
+
+CA_county_crs <- st_crs(CA_county_sf) 
+
+CA_county_crs # ID = "EPSG", 3857
+# not in the same coordinate reference system
+
+CA_county_6414 <- st_transform(CA_county_sf, 6414)
+```
+
+
+```{r}
+tm_shape(model_conflict_raster) +
+  tm_raster() +
+  tmap_mode(mode = "view") +
+  # tm_shape(CA_county_6414) +
+  # tm_polygons(alpha = 0.5, border.col = "darkblue") +
+  tm_layout(legend.outside = TRUE) +
+  tm_layout(title = "Modeled Human-Black Bear Conflict in CA", title.size = 1.5, title.position = c("right", "top")) 
+
+# equal intervals? quantiles? 
+# probability of human black bear conflict - scale of 0 to 1, 1 is high probability
+# should i put the county shapefile on top? can crop the raster by different counties --- function called crop() can probably make it reactive, that would zoom the map in to specific maps
+
+# select your county, can make them pick the color scheme or something, not necessarily messing with the data
+
+# mapping conflict points that they actually have from wildlife instant report system
+# claire's map, check/uncheck yes no, actual conflict points over our projected conflict points
+# CA raster -- all of CA, every pixel, Claire has just points, can overlay on top of raster, have a yes or no box widget,overlay actual conflict point over modeled probablity display 
+# use the raster one that I have now
+# claire's 
+```
+
+## Future - 2030
+
+```{r}
+
 ```
 
