@@ -116,7 +116,7 @@ server <- function(input, output){
     ggplot(data = bear_data_csv, aes(x = year)) +
     geom_bar(data = conflict_reactive(), aes(fill = confirmed_category)) +
     scale_fill_manual(breaks = c("Depredation", "General Nuisance", "Potential Human Conflict", "Sighting"),
-                        values = c("pink", "peru", "dodgerblue", "darkolivegreen")) +
+                        values = c("pink1", "#F4A261", "#796535", "darkolivegreen")) +
       labs(y = "Number of observations", title = "Wildlife Conflict Type by Year")
   ) #end output plotting conflict map
 
