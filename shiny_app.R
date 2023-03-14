@@ -3,11 +3,23 @@ library(tidyverse)
 library(sf)
 library(tmap)
 library(here)
+library(lubridate)
 
-bear_data <- read_sf("data/WIR_clean.csv") %>%
+
+#bear_data_csv
+bear_data_csv <- read_csv("data/WIR_clean.csv") %>%
   mutate(date = lubridate::mdy_hm(incident_date),
          year = lubridate::year(date))
 
+#bear_data wrangling
+bear_data_sf <- bear_data_csv %>%
+  drop_na(latitude, longitude) %>%
+  select(c(-species, -behavior_observed, -incident_status)) %>%
+  st_as_sf(coords = c("longitude", "latitude"), crs = 3310)
+
+#bear spatial data
+bear_conflict_sf <- read_sf(
+  here("data","conflict_buffered_refined","conflict_buffered_refined.shp"))
 
 ca_counties_shp <- read_sf(here("data/CA_Counties/CA_counties_TIGER2016.shp")) %>%
   janitor::clean_names() %>%
@@ -17,38 +29,60 @@ ca_counties_shp <- read_sf(here("data/CA_Counties/CA_counties_TIGER2016.shp")) %
 
 ui <- fluidPage(theme="ocean.css",
                 navbarPage("Black Bear Aware", #navbarPage allows us to create our tabs
-                           tabPanel("Landing Page", p("This project, in coorporation with California Department of Fish and Wildlife, explores human-black bear conflict across California. By analyzing spatial data on suitable bear habitat, human settlement locations, drought and fire extent and severity, and human-wildlife incident reports, we will develop a predictive model to assist wildlife managers in anticipating future conflict.")), #end tabpanel thing 1
+                           tabPanel("About",
+                                    sidebarLayout(
+                                      sidebarPanel(h4("About the project:"),
+                                                   p("Grace Bianchi is the coolest."),
+                                                   p("Claire Meuter"),
+                                                   p("Katheryn Moya"),
+                                                   br(), " ",
+                                                   h4("About the Data"),
+                                                   br(),"",
+                                                   p("The data")),
+                                      mainPanel(h4(p("About the App")),
+                                                p("This project, in coorporation with California Department of Fish and Wildlife, explores human-black bear conflict across California. By analyzing spatial data on suitable bear habitat, human settlement locations, drought and fire extent and severity, and human-wildlife incident reports, we will develop a predictive model to assist wildlife managers in anticipating future conflict."),
+                                                p("Information about CDFW"),
+                                                p("Info about data"),
+                                                br(),
+                                                p("For more information on this project, see the",  a("UCSB's Bren School Master's Directory", href = 'https://bren.ucsb.edu/projects/black-bear-aware-predicting-human-black-bear-conflict-likelihood-changing-climate'), "."),
+                                                br(),
+
+                                      )
+                                    )), #end tabpanel thing 1
 
                            tabPanel("Conflict Exploration", #this is how we add tabs.
                                     sidebarLayout(
-                                      sidebarPanel("WIDGETS",
+                                      sidebarPanel("",
                                                    checkboxGroupInput(
                                                      inputId = "pick_category",
                                                      label = "Choose conflict type:",
-                                                     choices = unique(bear_data$confirmed_category), #because we've typed unique here, we don't need to list out the species. WE can do the same thing for types of conflict
+                                                     choices = unique(bear_data_csv$confirmed_category), #because we've typed unique here, we don't need to list out the species. WE can do the same thing for types of conflict
                                                      selected = c("Sighting", "Depredation")
                                                    )
                                       ), #End sidebarPanel widgets
-                                      mainPanel(plotOutput("conflict_plot")
+                                      mainPanel(h4(p("Wildlife conflict observations by conflict type over time in California")),
+                                                p("Information about each conflict type"),
+                                                p("Maybe some info about the total number of observations? like n="),
+                                        plotOutput("conflict_plot")
                                       ) # endconflict exploration mainPanel
                                     ) #end sidebar (tab1) layout
                            ),
                            tabPanel("Mapping Conflict",
                                     sidebarPanel("Conflict occurances",
                                                  selectInput("selectcounty", label = "Select County",
-                                                             choices = unique(bear_data$county_name)
+                                                             choices = unique(bear_data_sf$county_name)
                                                  ), # end select input
                                                  selectInput("select_year", label = "Select Year",
-                                                                    choices = unique(bear_data$year)),
+                                                                    choices = unique(bear_data_sf$year)),
 
                                                  selectInput("select_conflict", label = "Type of Conflict",
-                                                             choices = unique(bear_data$confirmed_category)),
+                                                             choices = unique(bear_data_sf$confirmed_category)),
 
-                                                 actionButton(inputId = "map_btn", label = "Map")
+                                                 actionButton(inputId = "map_btn", label = "Generate Map")
 
                                     ), # end sidebar panel
                                     mainPanel("Output map",
-                                              plotOutput("conflict_map")
+                                              tmapOutput("conflict_map")
                                     ) # end main panel
 
                            ), # end  mappiing conflict tab panel
@@ -60,32 +94,27 @@ ui <- fluidPage(theme="ocean.css",
 ) #end ui
 
 server <- function(input, output){
-  sw_reactive <- reactive({
-    x<- starwars %>%
-      filter(species %in% input$pick_species) #What does this do? When it sees the input ID "pick_species" it will filter the species in the starwars dataframe by the selected species in the widget
-    return(x)
-  }) #End sw_reactive
-
-  output$sw_plot <- renderPlot(
-    ggplot(data = sw_reactive(),aes(x=mass, y = height)) +
-      geom_point(aes(color=species))
-  ) #end output$sw_plot
 
   # conflict selection for exploration
   conflict_reactive <- reactive({
     validate(need(try(length(input$pick_category) > 0),
                   "please make selection")) # error checking
-    y<- bear_data %>%
+
+    y<- bear_data_csv %>%
       filter(confirmed_category %in% input$pick_category) %>%
-      group_by(year) # group to graph counts over time
+      group_by(year)  # group to graph counts over time
+
     return(y)
   }) #End conflict_reactive
 
 
   # output conflict graph
   output$conflict_plot <- renderPlot(
-    ggplot(data = bear_data, aes(x = year)) +
-      geom_bar(data = conflict_reactive(), aes(fill = confirmed_category))
+    ggplot(data = bear_data_csv, aes(x = year)) +
+    geom_bar(data = conflict_reactive(), aes(fill = confirmed_category)) +
+    scale_fill_manual(breaks = c("Depredation", "General Nuisance", "Potential Human Conflict", "Sighting"),
+                        values = c("pink", "peru", "dodgerblue", "darkolivegreen")) +
+      labs(y = "Number of observations", title = "Wildlife Conflict Type by Year")
   ) #end output plotting conflict map
 
 
@@ -93,8 +122,8 @@ server <- function(input, output){
   conflict_map_inputs <- reactive({
     validate(need(try(length(input$select_conflict) > 0),
                   "please make selection")) # error check
-    req(input$map_btn) # button has to be pressed to make map
-    g <- bear_data %>%
+    #req(input$map_btn) # button has to be pressed to make map
+    g <- bear_conflict_sf %>%
       filter(confirmed_category %in% input$select_conflict) %>%
       filter(year %in% input$select_year) %>%
       filter(county_name %in% input$selectcounty)
@@ -102,13 +131,12 @@ server <- function(input, output){
   })
 
 
-output$conflict_map <- renderPlot({
-  req(data()) # one progress bar once inputs are complete
-  ggplot() +
-    geom_sf(data = ca_counties_shp, color = "white") +
-    geom_sf(data = conflict_map_inputs(), aes(x = longtitude, y = latitude))
-}
-)
+  output$conflict_map <- renderTmap({
+  tm_shape(bear_conflict_sf) +
+      tm_dots() +
+    tmap_mode(mode = "view")
+}) #end conflict map output}
+
 
 # progress bar for mapping
 data <- eventReactive(input$map_btn, {

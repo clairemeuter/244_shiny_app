@@ -18,6 +18,7 @@ library(tmap)
       geom_bar()
 ```
 
+
 # Visualizing Conflict Projections - Katheryn
 
 ## Present
@@ -67,7 +68,29 @@ tm_shape(model_conflict_raster) +
 
 ## Future - 2030
 
+
 ```{r}
+# CA example raster read in 
+ca_raster <- rast(here("data","CARaster_Tiger_Formatted","formattedcaraster.tif"))
+
+bearCRS <- st_crs(ca_raster)
+
+#bear_data_csv
+bear_data_csv <- read_csv("data/WIR_clean.csv") %>%
+  mutate(date = lubridate::mdy_hm(incident_date),
+         year = year(date))
+
+#bear_data wrangling
+bear_data_sf <- bear_data_csv %>%
+  drop_na(latitude, longitude) %>%
+  select(c(-species, -behavior_observed, -incident_status)) %>%
+  st_as_sf(coords = c("latitude","longitude"), crs = bearCRS)
+
+bear_conflict_sf <- read_sf(here("data","conflict_buffered_refined","conflict_buffered_refined.shp"))
+
+tm_shape(bear_conflict_sf) +
+  tm_dots() + 
+  tmap_mode(mode = "view")
 
 ```
 
