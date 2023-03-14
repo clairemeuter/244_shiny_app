@@ -68,7 +68,7 @@ ui <- fluidPage(theme="ocean.css",
                                     ) #end sidebar (tab1) layout
                            ),
                            tabPanel("Mapping Conflict",
-                                    sidebarPanel("Conflict occurances",
+                                    sidebarPanel("Conflict occurrences",
                                                  selectInput("selectcounty", label = "Select County",
                                                              choices = unique(bear_data_sf$county_name)
                                                  ), # end select input
@@ -87,11 +87,18 @@ ui <- fluidPage(theme="ocean.css",
 
                            ), # end  mappiing conflict tab panel
 
-                           tabPanel("Mapping Projections")
+                           tabPanel("Mapping Projections",
+                                    sidebarPanel("",
+                                                 radioButtons("select_overlap", label = "Compare Modeled Probability with Actual Conflict Occurrence:",
+                                                              choices = list("Yes" = 1, "No" = 2),
+                                                              selected = 1) # end radio buttons
+                                                 ), # end sidebar panel
+                                    mainPanel("Output map",
+                                              tmapOutput("raster_output_map"))
 
 
                 ) # end navbarPAge
-) #end ui
+)) #end ui
 
 server <- function(input, output){
 
@@ -148,6 +155,28 @@ data <- eventReactive(input$map_btn, {
     #runif(1)
   })
 })
+
+# output conflict probability raster map
+
+# raster_conflict_inputs <- reactive({
+#   validate(need(try(length(input$select_overlap) > 0),
+#                 "please make selection")) # error check
+#   #req(input$map_btn) # button has to be pressed to make map
+#   m <-
+#   return(m)
+# })
+
+output$raster_conflict_map <- renderTmap({
+  tm_shape(model_conflict_raster) +
+    tm_raster(style= "order", palette = "viridis") + # order =
+    tmap_mode(mode = "view") +
+    tm_layout(legend.outside = TRUE) +
+    tm_layout(title = "Modeled Present Probability of Human-Black Bear Conflict in California",
+              title.size = 1.5, title.position = c("right", "top")) +
+    tm_minimap()
+}) # end conflict probability raster output
+
+
 
 
 #  county_reactive <- reactive({
