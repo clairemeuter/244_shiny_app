@@ -1,5 +1,20 @@
 
-@import url('https://fonts.googleapis.com/css?family=Quicksand&display=swap')
+/* importing fancy google font */
+
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+
+/* updating background color and font type and size */
+body{
+  background-color: #85936E;
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 18px;
+  line-height: 1.15;
+  letter-spacing: -.02em;
+  color: black;
+  -webkit-font-smoothing: antialiased
+
 
 body {
   background-color: darkolivegreen;
@@ -15,3 +30,40 @@ h1 {
   color: antiquewhite;
   -webkit-font-smoothing: antialiased;
 }
+
+
+
+/* Style the navigation bar*/
+
+
+.navbar-static-top{
+  color: black;
+  font-size: 18px;
+  background-color: #B4B297;
+  width: 100%;
+}
+
+.navbar-nav li a:hover, .navbar-nav > .active > a {
+color: antiquewhite !important;
+background-color:#8db14e!important;
+background-image: none !important;
+}
+
+/* Add responsiveness - on screens less than 500px, make the navigation links appear on top of each other, instead of next to each other */
+@media screen and (max-width: 500px) {
+  .navbar a {
+    float: none;
+    display: block;
+    width: 100%;
+    text-align: left; /* If you want the text to be left-aligned on small screens */
+  }
+}
+
+
+
+
+
+
+
+
+

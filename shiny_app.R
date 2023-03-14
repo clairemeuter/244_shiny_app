@@ -9,7 +9,7 @@ library(lubridate)
 #bear_data_csv
 bear_data_csv <- read_csv("data/WIR_clean.csv") %>%
   mutate(date = lubridate::mdy_hm(incident_date),
-         year = year(date))
+         year = lubridate::year(date))
 
 #bear_data wrangling
 bear_data_sf <- bear_data_csv %>%
