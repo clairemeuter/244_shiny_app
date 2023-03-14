@@ -41,6 +41,22 @@ CA_county_crs # ID = "EPSG", 3857
 # not in the same coordinate reference system
 
 CA_county_6414 <- st_transform(CA_county_sf, 6414)
+
+# read in known bear conflict shapefile 
+
+bear_data_csv <- read_csv("data/WIR_clean.csv") %>%
+  mutate(date = lubridate::mdy_hm(incident_date),
+         year = year(date))
+
+
+#bear_data wrangling
+bear_data_sf <- bear_data_csv %>%
+  drop_na(latitude, longitude) %>%
+  select(c(-species, -behavior_observed, -incident_status)) %>%
+  st_as_sf(coords = c("latitude","longitude"), crs = bearCRS)
+
+bear_conflict_sf <- read_sf(here("data","conflict_buffered_refined","conflict_buffered_refined.shp"))
+
 ```
 
 
@@ -64,6 +80,8 @@ tm_shape(model_conflict_raster) +
 # CA raster -- all of CA, every pixel, Claire has just points, can overlay on top of raster, have a yes or no box widget,overlay actual conflict point over modeled probablity display 
 # use the raster one that I have now
 # claire's 
+# "yes" is just adding in the points
+# try to change the raster colors into quantiles or whatever
 ```
 
 ## Future - 2030
