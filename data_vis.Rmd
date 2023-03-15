@@ -11,12 +11,105 @@ library(tidyverse)
 library(sf)
 library(terra)
 library(tmap)
+library(here)
 ```
 
 ```{r}
  ggplot(data = WIR_clean, aes(x=confirmed_category)) +
       geom_bar()
 ```
+
+
+# Visualizing Conflict Projections - Katheryn
+
+## Present
+```{r}
+# read in raster data
+model_conflict_raster <- rast(here("data","mod3clim_map_squared.tif"))
+
+# check coordinate reference system
+
+model_conflict_CRS <- st_crs(model_conflict_raster)
+
+model_conflict_CRS # ID = EPSG 6414
+
+CA_county_sf <- read_sf(here("data", "ca_counties", "CA_Counties_TIGER2016.shp")) %>% 
+   janitor::clean_names()
+
+CA_county_crs <- st_crs(CA_county_sf) 
+
+CA_county_crs # ID = "EPSG", 3857
+# not in the same coordinate reference system
+
+CA_county_6414 <- st_transform(CA_county_sf, 6414)
+
+# read in known bear conflict csv and convert to shapefile 
+
+bear_data_csv <- read_csv("data/WIR_clean.csv") %>%
+  mutate(date = lubridate::mdy_hm(incident_date),
+         year = lubridate::year(date))
+
+# set CRS for bear conflict to be the same as the raster
+bear_6414 <- st_crs(model_conflict_CRS)
+
+#bear_data wrangling
+
+bear_data_6414_sf <- bear_data_csv %>%
+  drop_na(latitude, longitude) %>%
+  select(c(-species, -behavior_observed, -incident_status)) %>%
+  st_as_sf(coords = c("latitude","longitude"), crs = bear_6414)
+
+bear_conflict_6414_sf <- read_sf(here("data","conflict_buffered_refined","conflict_buffered_refined.shp"))
+
+```
+
+```{r}
+# exploring distribution of values contained within raster
+
+#first convert to data frame 
+
+conflict_raster_df <- as.data.frame(model_conflict_raster, xy = TRUE)
+  
+  
+ggplot() +
+    geom_histogram(data = conflict_raster_df, aes(x = lyr1))
+```
+
+
+```{r}
+predicted_conflict_raster <- tm_shape(model_conflict_raster) +
+  tm_raster(style= "order", palette = "viridis") + # order = 
+  tmap_mode(mode = "view") +
+  tm_layout(legend.outside = TRUE) +
+  tm_layout(title = "Modeled Probability of Human-Black Bear Conflict in California", title.size = 1.5, title.position = c("right", "top")) +
+  tm_minimap()
+  
+  
+actual_conflict_sf <- tm_shape(bear_conflict_6414_sf) +
+  tm_dots(col = "type",
+          palette = c("darkorange","violetred1","firebrick","darkorchid1"))
+
+CA_county_6414_sf <- 
+   tm_shape(CA_county_6414) +
+   tm_polygons(alpha = 0.5, border.col = "darkblue") 
+
+# equal intervals? quantiles? 
+# probability of human black bear conflict - scale of 0 to 1, 1 is high probability
+# should i put the county shapefile on top? can crop the raster by different counties --- function called crop() can probably make it reactive, that would zoom the map in to specific maps
+
+# select your county, can make them pick the color scheme or something, not necessarily messing with the data
+
+# mapping conflict points that they actually have from wildlife instant report system
+# claire's map, check/uncheck yes no, actual conflict points over our projected conflict points
+# CA raster -- all of CA, every pixel, Claire has just points, can overlay on top of raster, have a yes or no box widget,overlay actual conflict point over modeled probablity display 
+# use the raster one that I have now
+# claire's 
+# "yes" is just adding in the points
+# try to change the raster colors into quantiles or whatever
+```
+
+## Future - 2030
+
 
 ```{r}
 # CA example raster read in 
@@ -40,5 +133,51 @@ bear_conflict_sf <- read_sf(here("data","conflict_buffered_refined","conflict_bu
 tm_shape(bear_conflict_sf) +
   tm_dots() + 
   tmap_mode(mode = "view")
+
 ```
+
+
+```{r}
+
+ bear_conflict_df <- bear_conflict_sf %>%
+      filter(county %in% "Kern") %>%
+      filter(year %in% "2020")
+
+g <- st_as_sf(bear_conflict_df, wkt = 'geometry')
+
+    return(g)
+g
+class(g)
+
+plot(g)
+
+tm_shape(g) +
+      tm_dots() +
+    tmap_mode(mode = "view")
+```
+```{r}
+
+   # validate(need(try(length(input$select_conflict) > 0),
+                 # "please make selection")) # error check
+    #req(input$map_btn) # button has to be pressed to make map
+
+    county <- ca_counties_shp %>%
+      filter(name == "Kern") %>% 
+  project(..,ca_raster)
+
+
+
+    g <- bear_conflict_sf %>%
+      filter(county == "Kern") %>%
+      filter(year == "2020") %>%
+      filter(!is.na(geometry)) %>%
+      st_as_sf() 
+
+    tm_shape(county) +
+      tm_polygons(alpha = 0) +
+      tm_shape(g) +
+      tm_dots()+
+      tmap_mode("view")
+```
+
 
