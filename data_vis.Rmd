@@ -61,6 +61,8 @@ bear_data_6414_sf <- bear_data_csv %>%
 
 bear_conflict_6414_sf <- read_sf(here("data","conflict_buffered_refined","conflict_buffered_refined.shp"))
 
+
+
 ```
 
 ```{r}
@@ -77,13 +79,18 @@ ggplot() +
 
 
 ```{r}
-predicted_conflict_raster <- tm_shape(model_conflict_raster) +
+predicted_conflict_raster <- 
+  tm_shape(model_conflict_raster) +
   tm_raster(style= "order", palette = "viridis") + # order = 
   tmap_mode(mode = "view") +
   tm_layout(legend.outside = TRUE) +
   tm_layout(title = "Modeled Probability of Human-Black Bear Conflict in California", title.size = 1.5, title.position = c("right", "top")) +
-  tm_minimap()
+  tm_shape(bear_conflict_6414_sf) +
+  tm_minimap() +
+  tm_dots(col = "type",
+          palette = c("darkorange","violetred1","firebrick","darkorchid1"))
   
+predicted_conflict_raster
   
 actual_conflict_sf <- tm_shape(bear_conflict_6414_sf) +
   tm_dots(col = "type",
@@ -157,6 +164,7 @@ tm_shape(g) +
       tm_dots() +
     tmap_mode(mode = "view")
 ```
+
 ```{r}
 
    # validate(need(try(length(input$select_conflict) > 0),
