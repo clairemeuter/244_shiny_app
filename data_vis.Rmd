@@ -162,6 +162,7 @@ tm_shape(g) +
       tm_dots() +
     tmap_mode(mode = "view")
 ```
+
 ```{r}
 
    # validate(need(try(length(input$select_conflict) > 0),
