@@ -88,7 +88,8 @@ ui <- fluidPage(theme="ocean.css",
 
                                     ), # end sidebar panel
                                     mainPanel("Output map",
-                                              tmapOutput("conflict_map")
+                                              tmapOutput("conflict_map"),
+
                                     ) # end main panel
 
                            ), # end  mappiing conflict tab panel
@@ -160,14 +161,17 @@ server <- function(input, output){
   })
   #bear points reactive
   g <- reactive({
-    bear_conflict_sf %>%
+   x <- bear_conflict_sf %>%
       dplyr::filter(county %in% input$select_county) %>%
       dplyr::filter(year %in% input$select_year) %>%
-      dplyr::filter(!is.na(geometry))
+      dplyr::filter(!is.na(geometry)) # %>%
+    # st_as_sf()
+   message("in g reactive, class of x = " , class(x))
+   return(x)
   }) #end g reactive
 
-dataTmap <- reactive({
-  sf:st_as_sf(
+dataTmap <- reactive({ #got this from stack exchange
+  sf::st_as_sf(
     data.frame(
     type = g()$type,
     county = g()$count,
@@ -175,6 +179,8 @@ dataTmap <- reactive({
     geometry = g()$geometry), wkt = "geometry"
 
   )
+  message("in g reactive, class of dataTmap = " , class(dataTmap))
+  return(dataTmap)
 })
 
   output$conflict_map <- renderTmap({
@@ -185,6 +191,7 @@ dataTmap <- reactive({
       tmap_mode("view")
 }) #end conflict map output}
 
+output$message <- message("in g reactive, class of dataTmap = " , class(dataTmap))
 
 # progress bar for mapping
 # data <- eventReactive(input$map_btn, {
