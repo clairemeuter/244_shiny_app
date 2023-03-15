@@ -4,12 +4,16 @@ library(sf)
 library(tmap)
 library(here)
 library(lubridate)
+library(tsibble)
 
 
 #bear_data_csv
 bear_data_csv <- read_csv("data/WIR_clean.csv") %>%
   mutate(date = lubridate::mdy_hm(incident_date),
-         year = year(date))
+         year = year(date),
+         month = month(date))
+
+
 
 #bear_data wrangling
 bear_data_sf <- bear_data_csv %>%
@@ -53,17 +57,24 @@ ui <- fluidPage(theme="ocean.css",
                            tabPanel("Conflict Exploration", #this is how we add tabs.
                                     sidebarLayout(
                                       sidebarPanel("",
+                                                   radioButtons(
+                                                     inputId = "select_date",
+                                                     label = "Choices",
+                                                     choices = c("Yearly"="year", "Monthly"="month"),
+                                                     selected = "year"
+                                                   ),
                                                    checkboxGroupInput(
                                                      inputId = "pick_category",
                                                      label = "Choose conflict type:",
                                                      choices = unique(bear_data_csv$confirmed_category), #because we've typed unique here, we don't need to list out the species. WE can do the same thing for types of conflict
-                                                     selected = c("Sighting", "Depredation")
+                                                     selected = c("Depredation", "General Nuisance", "Potential Human Conflict", "Sighting")
                                                    )
                                       ), #End sidebarPanel widgets
-                                      mainPanel(h4(p("Wildlife conflict observations by conflict type over time in California")),
-                                                p("Information about each conflict type"),
+                                      mainPanel(h4(p("Wildlife conflict observations in California")),
+                                                p("The user has the opportunity to display conflict data at an annual or monthly scale to visualize the frequency of the various types of conflicts over the years and throughout the seasons."),
                                                 p("Maybe some info about the total number of observations? like n="),
-                                        plotOutput("conflict_plot")
+                                        plotOutput("conflict_plot"),
+                                        p("Figure 1. Wildlife Conflict observations since 2016 collected by the California's Department of Fish & Wildlife (n=4665)")
                                       ) # endconflict exploration mainPanel
                                     ) #end sidebar (tab1) layout
                            ),
@@ -97,25 +108,44 @@ server <- function(input, output){
 
   # conflict selection for exploration
   conflict_reactive <- reactive({
-    validate(need(try(length(input$pick_category) > 0),
-                  "please make selection")) # error checking
-
     y<- bear_data_csv %>%
-      filter(confirmed_category %in% input$pick_category) %>%
-      group_by(year)  # group to graph counts over time
-
+      filter(confirmed_category %in% input$pick_category)
     return(y)
   }) #End conflict_reactive
 
-
   # output conflict graph
-  output$conflict_plot <- renderPlot(
-    ggplot(data = bear_data_csv, aes(x = year)) +
-    geom_bar(data = conflict_reactive(), aes(fill = confirmed_category)) +
-    scale_fill_manual(breaks = c("Depredation", "General Nuisance", "Potential Human Conflict", "Sighting"),
+  output$conflict_plot <- renderPlot({
+    # Use input$select_date() to determine whether to group data by year or month
+    if (input$select_date == "year") {
+      x_var <- "year"
+      # axis labels by year
+      x_scale <- scale_x_continuous(breaks = seq(min(bear_data_csv$year), max(bear_data_csv$year), by = 1))
+      x_limits <- coord_cartesian(xlim = c(min(bear_data_csv$year), max(bear_data_csv$year)))
+    } else {
+      x_var <- "month"
+      x_scale <- scale_x_continuous( breaks = seq(min(bear_data_csv$month), max(bear_data_csv$month), by=1), labels = month.abb)
+      x_limits <- coord_cartesian(xlim = c(min(bear_data_csv$month), max(bear_data_csv$month)))
+
+    }
+
+    ggplot(data = conflict_reactive()) +
+      geom_bar(aes(fill = confirmed_category, x = !!sym(x_var))) + #convert the x_var string into a variable name for aes
+      x_scale +
+      scale_fill_manual(breaks = c("Depredation", "General Nuisance", "Potential Human Conflict", "Sighting"),
                         values = c("pink", "peru", "dodgerblue", "darkolivegreen")) +
-      labs(y = "Number of observations", title = "Wildlife Conflict Type by Year")
-  ) #end output plotting conflict map
+      labs(y = "Number of observations",
+           fill = "Conflict Type", x = "") +
+     # x_limits +
+      coord_cartesian(ylim = c(0, NA)) +
+      theme_bw() +
+      theme(axis.text.x = element_text(size = 16),
+            axis.text.y = element_text(size = 18),
+            axis.title.y = element_text(size=18),
+            legend.title = element_text(size = 18),
+            legend.text = element_text(size = 16),
+            plot.background = element_rect(fill = "#BFD5E3")) # change plot background color to page color
+
+  })
 
 
 
