@@ -5,13 +5,19 @@ library(tmap)
 library(here)
 library(leaflet)
 library(lubridate)
-library(terra)
+library(terra) # add terra
 library(shinyWidgets) # for material switch
+library(tsibble)
+
+
+
 
 #bear_data_csv
 bear_data_csv <- read_csv("data/WIR_clean.csv") %>%
   mutate(date = lubridate::mdy_hm(incident_date),
-         year = lubridate::year(date))
+         year = year(date),
+         month = month(date))
+
 
 #bear_data wrangling
 bear_data_sf <- bear_data_csv %>%
@@ -26,6 +32,10 @@ bear_conflict_sf <- read_sf(
 ca_counties_shp <- read_sf(here("data/CA_Counties/CA_counties_TIGER2016.shp")) %>%
   janitor::clean_names() %>%
   select(name)
+
+tmapIcon <- tmap_icons(here("data","black_bear2.png"))
+
+# read in data & change label - Katheryn
 
 #st_crs(ca_counties_shp) 3857
 
@@ -60,11 +70,23 @@ ui <- fluidPage(theme="ocean.css",
                            tabPanel("About",
                                     sidebarLayout(
                                       sidebarPanel(h4("About the app developers:"),
-                                                   p("Grace Bianchi is the coolest."),
-                                                   p("Claire Meuter is a second-year MESM student specializing in Conservation Planning.
-                                                     As data manager on the Black Bear Aware team, Claire is excited to combine her group project results with Shiny App creation"),
-                                                   p("Katheryn Moya"),
-                                                   br(), " ",
+                                                   tags$style("#project-grid {display: grid;
+                      grid-template-columns: 100px 1fr;grid-gap: 10px;}"),
+                      h1('Project team'),
+                      div(id = "project-grid",
+                          div(img(src='grace.jpeg', style = 'border-radius: 50%', width = '100px')),
+                          div(h4('Claire Meuter'),
+                          p('Claire Meuter is a second-year MESM student specializing in Conservation Planning.
+                                                     As data manager on the Black Bear Aware team, Claire is excited to combine her group project results with Shiny App creation')),
+                          div(img(src='grace.jpeg', style = 'border-radius: 50%', width = '100px')),
+                          div(h4('Grace Bianchi'),
+                              p('Some very interesting text about person 1. Some very interesting text about person 1. Some very interesting text about person 1. Some very interesting text about person 1.')),
+                          ### katheryn
+                          div(img(src='grace.jpeg', style = 'border-radius: 50%', width = '100px')),
+                          div(h4('Katheryn Moya'),
+                              p('Some very interesting text about person 1. Some very interesting text about person 1. Some very interesting text about person 1. Some very interesting text about person 1.'))),
+
+
                                                    h4("About the Data"),
                                                    br(),"",
                                                    p("The data for this project is provided by the ")),
@@ -84,36 +106,47 @@ ui <- fluidPage(theme="ocean.css",
                            tabPanel("Conflict Exploration", #this is how we add tabs.
                                     sidebarLayout(
                                       sidebarPanel("",
+                                                   radioButtons(
+                                                     inputId = "select_date",
+                                                     label = "Choices",
+                                                     choices = c("Yearly"="year", "Monthly"="month"),
+                                                     selected = "year"
+                                                   ),
                                                    checkboxGroupInput(
                                                      inputId = "pick_category",
                                                      label = "Choose conflict type:",
                                                      choices = unique(bear_data_csv$confirmed_category), #because we've typed unique here, we don't need to list out the species. WE can do the same thing for types of conflict
-                                                     selected = c("Sighting", "Depredation")
+                                                     selected = c("Depredation", "General Nuisance", "Potential Human Conflict", "Sighting")
                                                    )
                                       ), #End sidebarPanel widgets
-                                      mainPanel(h4(p("Wildlife conflict observations by conflict type over time in California")),
-                                                p("Information about each conflict type"),
+                                      mainPanel(h4(p("Wildlife conflict observations in California")),
+                                                p("The user has the opportunity to display conflict data at an annual or monthly scale to visualize the frequency of the various types of conflicts over the years and throughout the seasons."),
                                                 p("Maybe some info about the total number of observations? like n="),
-                                        plotOutput("conflict_plot")
+                                        plotOutput("conflict_plot"),
+                                        p("Figure 1. Wildlife Conflict observations since 2016 collected by the California's Department of Fish & Wildlife (n=4665)")
                                       ) # endconflict exploration mainPanel
                                     ) #end sidebar (tab1) layout
                            ),
                            tabPanel("Mapping Conflict",
 
                                     sidebarPanel("Conflict occurrences",
-                                                 selectInput("select_county", label = "Select County",
-                                                             choices = unique(bear_data_sf$county_name)
-                                                 ), # end select input
+                                                 selectInput(inputId = "select_county", label = "Select County",
+                                                             choices = unique(bear_data_sf$county_name),
+                                                             selected = "Santa Barbara"
+                                                 ), # end select input for select_county
 
                                                  selectInput("select_year", label = "Select Year",
-                                                             choices = unique(bear_data_sf$year)
-                                                 ),
+                                                             choices = unique(bear_data_sf$year),
+                                                             selected = 2020
+                                                 ), #end select input for year
 
-                                                 actionButton(inputId = "map_btn", label = "Generate Map")
+                                              #   actionButton(inputId = "map_btn", label = "Generate Map")
 
                                     ), # end sidebar panel
-                                    mainPanel("Output map",
-                                              tmapOutput("conflict_map")
+                                    mainPanel("Recorded Conflict Map",
+                                              tmapOutput("tmapMap"),
+
+
                                     ) # end main panel
 
                            ), # end  mappiing conflict tab panel
@@ -151,80 +184,79 @@ server <- function(input, output){
 
   # conflict selection for exploration
   conflict_reactive <- reactive({
-    validate(need(try(length(input$pick_category) > 0),
-                  "please make selection")) # error checking
-
     y<- bear_data_csv %>%
-      filter(confirmed_category %in% input$pick_category) %>%
-      group_by(year)  # group to graph counts over time
-
+      filter(confirmed_category %in% input$pick_category)
     return(y)
   }) #End conflict_reactive
 
-
   # output conflict graph
-  output$conflict_plot <- renderPlot(
-    ggplot(data = bear_data_csv, aes(x = year)) +
-    geom_bar(data = conflict_reactive(), aes(fill = confirmed_category)) +
-    scale_fill_manual(breaks = c("Depredation", "General Nuisance", "Potential Human Conflict", "Sighting"),
-                        values = c("pink1", "#F4A261", "#796535", "darkolivegreen")) +
-      labs(y = "Number of observations", title = "Wildlife Conflict Type by Year")
-  ) #end output plotting conflict map
+  output$conflict_plot <- renderPlot({
+    # Use input$select_date() to determine whether to group data by year or month
+    if (input$select_date == "year") {
+      x_var <- "year"
+      # axis labels by year
+      x_scale <- scale_x_continuous(breaks = seq(min(bear_data_csv$year), max(bear_data_csv$year), by = 1))
+      x_limits <- coord_cartesian(xlim = c(min(bear_data_csv$year), max(bear_data_csv$year)))
+    } else {
+      x_var <- "month"
+      x_scale <- scale_x_continuous( breaks = seq(min(bear_data_csv$month), max(bear_data_csv$month), by=1), labels = month.abb)
+      x_limits <- coord_cartesian(xlim = c(min(bear_data_csv$month), max(bear_data_csv$month)))
+    }
+
+    ggplot(data = conflict_reactive()) +
+      geom_bar(aes(fill = confirmed_category, x = !!sym(x_var))) + #convert the x_var string into a variable name for aes
+      x_scale +
+      scale_fill_manual(breaks = c("Depredation", "General Nuisance", "Potential Human Conflict", "Sighting"),
+                        values = c("pink", "peru", "dodgerblue", "darkolivegreen")) +
+      labs(y = "Number of observations",
+           fill = "Conflict Type", x = "") +
+     # x_limits +
+      coord_cartesian(ylim = c(0, NA)) +
+      theme_bw() +
+      theme(axis.text.x = element_text(size = 16),
+            axis.text.y = element_text(size = 18),
+            axis.title.y = element_text(size=18),
+            legend.title = element_text(size = 18),
+            legend.text = element_text(size = 16),
+            plot.background = element_rect(fill = "#BFD5E3")) # change plot background color to page color
+  })
 
 
+### sorting out my conflict map issues
+  data_conflict <- reactive({
+    bear_conflict_sf %>%
+      filter(county %in% input$select_county) %>%
+      filter(year %in% input$select_year)
+  })
+  dataTmap <- reactive({
+    sf::st_as_sf(data.frame(
+      type = data_conflict()$type,
+      year = data_conflict()$year,
+      county = data_conflict()$county,
+      geometry = data_conflict()$geometry
 
-  #conflict_map_inputs <- reactive({
-   # validate(need(try(length(input$select_conflict) > 0),
-                 # "please make selection")) # error check
-    #req(input$map_btn) # button has to be pressed to make map
-
- #   county <- ca_counties_shp %>%
- #     filter(name %in% input$select_county) %>%
- #     st_set_crs(3310)
+    ))
+  })
 
 
-
-#    g <- bear_conflict_sf %>%
- #     filter(county %in% input$select_county) %>%
- #     filter(year %in% input$select_year) %>%
- #     filter(!is.na(geometry)) %>%
-  #    st_as_sf() %>%
-  #    st_set_crs(3310)
-
-  #  return(g)
-
- # })
-#county map reactive
-  county <- reactive({
+  #county map reactive
+  county_map <- reactive({
     ca_counties_shp %>%
       dplyr::filter(name %in% input$select_county)
   })
-  #bear points reactive
-  g <- reactive({
-    bear_conflict_sf %>%
-      dplyr::filter(county %in% input$select_county) %>%
-      dplyr::filter(year %in% input$select_year) %>%
-      dplyr::filter(!is.na(geometry))
-  }) #end g reactive
 
-dataTmap <- reactive({
-  sf:st_as_sf(
-    data.frame(
-    type = g()$type,
-    county = g()$count,
-    year = g()$year,
-    geometry = g()$geometry), wkt = "geometry"
 
-  )
-})
 
-  output$conflict_map <- renderTmap({
-    #tm_shape(county) +
-      #tm_polygons(alpha = 0) +
-      tm_shape(dataTmap) +
-      tm_dots()+
-      tmap_mode("view")
-}) #end conflict map output}
+  output$tmapMap <- renderTmap({
+    tm_shape(county_map()) +
+      tm_polygons(alpha=0, border.col = "black", colorNA = NULL) +
+    tm_shape(dataTmap()) +
+      tm_symbols(shape = tmapIcon, border.lwd = 1, size = 0.5, border.alpha = 1, border.col = "white") +
+      tmap_mode("view")  +
+      tmap_options(basemaps = "OpenStreetMap")
+  })
+
+
 
 
 # progress bar for mapping
