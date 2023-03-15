@@ -42,11 +42,23 @@ ui <- fluidPage(theme="ocean.css",
                            tabPanel("About",
                                     sidebarLayout(
                                       sidebarPanel(h4("About the app developers:"),
-                                                   p("Grace Bianchi is the coolest."),
-                                                   p("Claire Meuter is a second-year MESM student specializing in Conservation Planning.
-                                                     As data manager on the Black Bear Aware team, Claire is excited to combine her group project results with Shiny App creation"),
-                                                   p("Katheryn Moya"),
-                                                   br(), " ",
+                                                   tags$style("#project-grid {display: grid;
+                      grid-template-columns: 100px 1fr;grid-gap: 10px;}"),
+                      h1('Project team'),
+                      div(id = "project-grid",
+                          div(img(src='grace.jpeg', style = 'border-radius: 50%', width = '100px')),
+                          div(h4('Claire Meuter'),
+                          p('Claire Meuter is a second-year MESM student specializing in Conservation Planning.
+                                                     As data manager on the Black Bear Aware team, Claire is excited to combine her group project results with Shiny App creation')),
+                          div(img(src='grace.jpeg', style = 'border-radius: 50%', width = '100px')),
+                          div(h4('Grace Bianchi'),
+                              p('Some very interesting text about person 1. Some very interesting text about person 1. Some very interesting text about person 1. Some very interesting text about person 1.')),
+                          ### katheryn
+                          div(img(src='grace.jpeg', style = 'border-radius: 50%', width = '100px')),
+                          div(h4('Katheryn Moya'),
+                              p('Some very interesting text about person 1. Some very interesting text about person 1. Some very interesting text about person 1. Some very interesting text about person 1.'))),
+
+
                                                    h4("About the Data"),
                                                    br(),"",
                                                    p("The data for this project is provided by the ")),
