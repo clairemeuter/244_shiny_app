@@ -5,7 +5,8 @@ library(tmap)
 library(here)
 library(leaflet)
 library(lubridate)
-# add terra
+library(terra)
+library(shinyWidgets) # for material switch
 
 #bear_data_csv
 bear_data_csv <- read_csv("data/WIR_clean.csv") %>%
@@ -26,9 +27,31 @@ ca_counties_shp <- read_sf(here("data/CA_Counties/CA_counties_TIGER2016.shp")) %
   janitor::clean_names() %>%
   select(name)
 
-# read in data & change label - Katheryn
-
 #st_crs(ca_counties_shp) 3857
+
+# predicted conflict raster data
+
+model_conflict_raster <- rast(here("data","mod3clim_map_squared.tif")) # CRS ID = EPSG 6414
+
+CA_county_6414 <- st_transform(CA_county_sf, 6414)
+
+bear_6414 <- st_crs(model_conflict_CRS)
+
+bear_data_6414_sf <- bear_data_csv %>%
+  drop_na(latitude, longitude) %>%
+  select(c(-species, -behavior_observed, -incident_status)) %>%
+  st_as_sf(coords = c("latitude","longitude"), crs = bear_6414)
+
+bear_conflict_6414_sf <- read_sf(here("data","conflict_buffered_refined","conflict_buffered_refined.shp")) #set CRS for bear conflict to be the same as the raster
+
+predicted_conflict <- tm_shape(model_conflict_raster) +
+  tm_raster(style= "order", palette = "viridis") + # order =
+  tmap_mode(mode = "view") +
+  tm_layout(legend.outside = TRUE) +
+  tm_layout(title = "Modeled Present Probability of Human-Black Bear Conflict in California",
+            title.size = 1.5, title.position = c("right", "top")) +
+  tm_minimap()
+## start shiny
 
 ui <- fluidPage(theme="ocean.css",
                 navbarPage("Black Bear Aware", #navbarPage allows us to create our tabs
@@ -95,16 +118,20 @@ ui <- fluidPage(theme="ocean.css",
 
                            tabPanel("Mapping Projections",
                                     sidebarPanel("",
-                                                 radioButtons("select_overlap", label = "Compare Modeled Probability with Actual Conflict Occurrence:",
-                                                              choices = list("Yes" = 1, "No" = 2),
-                                                              selected = 1) # end radio buttons
+                                                 materialSwitch(
+                                                   inputId = "overlap_switch",
+                                                   label = "Overlap with Actual Conflict Occurrences:",
+                                                   value = FALSE,
+                                                   status = "warning"
+                                                 )
+                                              # end switch button
                                                  ), # end sidebar panel
-                                    mainPanel("Output map",
-                                              tmapOutput("raster_output_map"))
+                                    mainPanel("",
+                                              tmapOutput("raster_conflict_map"),
+                                              tmapOutput("overlap_conflict"))
 
 
-                ) # end navbarPAge
-)) #end ui
+                ))) # end navbarPAge
 
 server <- function(input, output){
 
@@ -199,23 +226,26 @@ dataTmap <- reactive({
 
 # output conflict probability raster map - Katheryn
 
-# raster_conflict_inputs <- reactive({
-#   validate(need(try(length(input$select_overlap) > 0),
-#                 "please make selection")) # error check
-#   #req(input$map_btn) # button has to be pressed to make map
-#   m <-
-#   return(m)
-# })
 
-output$raster_conflict_map <- renderTmap({
-  tm_shape(model_conflict_raster) +
-    tm_raster(style= "order", palette = "viridis") + # order =
-    tmap_mode(mode = "view") +
-    tm_layout(legend.outside = TRUE) +
-    tm_layout(title = "Modeled Present Probability of Human-Black Bear Conflict in California",
-              title.size = 1.5, title.position = c("right", "top")) +
-    tm_minimap()
-}) # end conflict probability raster output
+  output$raster_conflict_map <- renderTmap({
+    tm_shape(model_conflict_raster) +
+      tm_raster(style= "order", palette = "viridis") + # order =
+      tmap_mode(mode = "view") +
+      tm_layout(legend.outside = TRUE) +
+      tm_layout(title = "Modeled Present Probability of Human-Black Bear Conflict in California",
+                title.size = 1.5, title.position = c("right", "top")) +
+      tm_minimap()
+  })
+
+
+output$overlap_conflict <- renderTmap({
+   predicted_conflict +
+    tm_shape(bear_conflict_6414_sf) +
+    tm_dots(col = "type",
+            palette = c("darkorange","violetred1","firebrick","darkorchid1"))
+})
+
+ # end conflict probability raster output
 
 
 
