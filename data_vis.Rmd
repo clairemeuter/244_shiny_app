@@ -139,6 +139,9 @@ tm_shape(bear_conflict_sf) +
 
 ```{r}
 
+
+bear_conflict_sf <- read_sf(here("data","conflict_buffered_refined","conflict_buffered_refined.shp"))
+
  bear_conflict_df <- bear_conflict_sf %>%
       filter(county %in% "Kern") %>%
       filter(year %in% "2020")
@@ -149,7 +152,6 @@ g <- st_as_sf(bear_conflict_df, wkt = 'geometry')
 g
 class(g)
 
-plot(g)
 
 tm_shape(g) +
       tm_dots() +

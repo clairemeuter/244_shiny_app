@@ -31,6 +31,8 @@ ca_counties_shp <- read_sf(here("data/CA_Counties/CA_counties_TIGER2016.shp")) %
   janitor::clean_names() %>%
   select(name)
 
+tmapIcon <- tmap_icons(here("data","black_bear2.png"))
+
 # read in data & change label - Katheryn
 
 #st_crs(ca_counties_shp) 3857
@@ -88,19 +90,23 @@ ui <- fluidPage(theme="ocean.css",
                            tabPanel("Mapping Conflict",
 
                                     sidebarPanel("Conflict occurrences",
-                                                 selectInput("select_county", label = "Select County",
-                                                             choices = unique(bear_data_sf$county_name)
-                                                 ), # end select input
+                                                 selectInput(inputId = "select_county", label = "Select County",
+                                                             choices = unique(bear_data_sf$county_name),
+                                                             selected = "Santa Barbara"
+                                                 ), # end select input for select_county
 
                                                  selectInput("select_year", label = "Select Year",
-                                                             choices = unique(bear_data_sf$year)
-                                                 ),
+                                                             choices = unique(bear_data_sf$year),
+                                                             selected = 2020
+                                                 ), #end select input for year
 
-                                                 actionButton(inputId = "map_btn", label = "Generate Map")
+                                              #   actionButton(inputId = "map_btn", label = "Generate Map")
 
                                     ), # end sidebar panel
-                                    mainPanel("Output map",
-                                              tmapOutput("conflict_map")
+                                    mainPanel("Recorded Conflict Map",
+                                              tmapOutput("tmapMap"),
+
+
                                     ) # end main panel
 
                            ), # end  mappiing conflict tab panel
@@ -160,59 +166,41 @@ server <- function(input, output){
   })
 
 
+### sorting out my conflict map issues
+  data_conflict <- reactive({
+    bear_conflict_sf %>%
+      filter(county %in% input$select_county) %>%
+      filter(year %in% input$select_year)
+  })
+  dataTmap <- reactive({
+    sf::st_as_sf(data.frame(
+      type = data_conflict()$type,
+      year = data_conflict()$year,
+      county = data_conflict()$county,
+      geometry = data_conflict()$geometry
 
-  #conflict_map_inputs <- reactive({
-   # validate(need(try(length(input$select_conflict) > 0),
-                 # "please make selection")) # error check
-    #req(input$map_btn) # button has to be pressed to make map
-
- #   county <- ca_counties_shp %>%
- #     filter(name %in% input$select_county) %>%
- #     st_set_crs(3310)
+    ))
+  })
 
 
-
-#    g <- bear_conflict_sf %>%
- #     filter(county %in% input$select_county) %>%
- #     filter(year %in% input$select_year) %>%
- #     filter(!is.na(geometry)) %>%
-  #    st_as_sf() %>%
-  #    st_set_crs(3310)
-
-  #  return(g)
-
- # })
-#county map reactive
-  county <- reactive({
+  #county map reactive
+  county_map <- reactive({
     ca_counties_shp %>%
       dplyr::filter(name %in% input$select_county)
   })
-  #bear points reactive
-  g <- reactive({
-    bear_conflict_sf %>%
-      dplyr::filter(county %in% input$select_county) %>%
-      dplyr::filter(year %in% input$select_year) %>%
-      dplyr::filter(!is.na(geometry))
-  }) #end g reactive
 
-dataTmap <- reactive({
-  sf:st_as_sf(
-    data.frame(
-    type = g()$type,
-    county = g()$count,
-    year = g()$year,
-    geometry = g()$geometry), wkt = "geometry"
 
-  )
-})
 
-  output$conflict_map <- renderTmap({
-    #tm_shape(county) +
-      #tm_polygons(alpha = 0) +
-      tm_shape(dataTmap) +
-      tm_dots()+
-      tmap_mode("view")
-}) #end conflict map output}
+  output$tmapMap <- renderTmap({
+    tm_shape(county_map()) +
+      tm_polygons(alpha=0, border.col = "black", colorNA = NULL) +
+    tm_shape(dataTmap()) +
+      tm_symbols(shape = tmapIcon, border.lwd = 1, size = 0.5, border.alpha = 1, border.col = "white") +
+      tmap_mode("view")  +
+      tmap_options(basemaps = "OpenStreetMap")
+  })
+
+
 
 
 # progress bar for mapping
