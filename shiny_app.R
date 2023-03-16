@@ -8,6 +8,7 @@ library(lubridate)
 library(terra) # add terra
 library(shinyWidgets) # for material switch
 library(tsibble)
+library(DT)
 
 
 
@@ -135,10 +136,15 @@ ui <- fluidPage(theme="ocean.css",
                                                      label = "Choose conflict type:",
                                                      choices = unique(bear_data_csv$confirmed_category), #because we've typed unique here, we don't need to list out the species. WE can do the same thing for types of conflict
                                                      selected = c("Depredation", "General Nuisance", "Potential Human Conflict", "Sighting")
-                                                   )
+                                                   ),
+                                                   h3("Types of Conflict:"),
+                                                   h5("An important note"),
                                       ), #End sidebarPanel widgets
-                                      mainPanel(h1("Wildlife conflict observations in California"),
-                                                h5("The user has the opportunity to display conflict data at an annual or monthly scale to visualize the frequency of the various types of conflicts over the years and throughout the seasons."),
+                                      mainPanel(h1("Human-black bear conflict observations in California"),
+                                                h5("The data displayed below shows reports of human-black bear conflict across California
+                                                   as recorded by the California department of Fish and Wildlife (CDFW) from 2016 to March of 2020. Data is recorded by CDFW's Wildlife Incident Reporting System (WIR)."),
+                                                h5("- Conflict reports can be displayed by yearly or monthly counts. Select montly to observe seasonal behaviors of bears."),
+                                                h5("-Select different conflict types to vizualize the frequency of types of conflict reported."),
                                                 h5("Maybe some info about the total number of observations? like n="),
                                         plotOutput("conflict_plot"),
                                         p("Figure 1. Wildlife Conflict observations since 2016 collected by the California's Department of Fish & Wildlife (n=4665)")
@@ -163,6 +169,9 @@ ui <- fluidPage(theme="ocean.css",
                                     ), # end sidebar panel
                                     mainPanel(h1("Recorded Conflict Map"),
                                               tmapOutput("tmapMap"),
+                                              br(),
+                                              h1("table of counts"),
+                                              DTOutput("reactive_df"),
 
 
                                     ) # end main panel
@@ -240,12 +249,25 @@ server <- function(input, output){
   })
 
 
-### sorting out my conflict map issues
+### reactive conflict map
   data_conflict <- reactive({
     bear_conflict_sf %>%
       filter(county %in% input$select_county) %>%
       filter(year %in% input$select_year)
   })
+
+  ## reactive datatable
+  contents <- reactive({
+    df <- bear_data_csv %>%
+      filter(county_name %in% input$select_county) %>%
+      filter(year %in% input$select_year) %>%
+      select(-geometry) %>%
+      group_by(type) %>%
+      tally()
+  })
+
+  #reactive conflict points tmap
+
   dataTmap <- reactive({
     sf::st_as_sf(data.frame(
       type = data_conflict()$type,
@@ -257,6 +279,8 @@ server <- function(input, output){
   })
 
 
+
+
   #county map reactive
   county_map <- reactive({
     ca_counties_shp %>%
@@ -264,7 +288,7 @@ server <- function(input, output){
   })
 
 
-
+#reactive map output
   output$tmapMap <- renderTmap({
     tm_shape(county_map()) +
       tm_polygons(alpha=0, border.col = "black", colorNA = NULL) +
@@ -273,8 +297,8 @@ server <- function(input, output){
       tmap_mode("view")  +
       tmap_options(basemaps = "OpenStreetMap")
   })
-
-
+ #reactive data table
+output$reactive_df <- renderDT(contents())
 
 
 # progress bar for mapping
