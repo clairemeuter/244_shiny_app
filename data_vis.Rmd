@@ -81,14 +81,17 @@ ggplot() +
 ```{r}
 predicted_conflict_raster <- 
   tm_shape(model_conflict_raster) +
-  tm_raster(style= "order", palette = "viridis") + # order = 
+  tm_raster(style= "order", 
+            palette = "viridis",
+            title = "Probability (%)") + # order = 
   tmap_mode(mode = "view") +
   tm_layout(legend.outside = TRUE) +
-  tm_layout(title = "Modeled Probability of Human-Black Bear Conflict in California", title.size = 1.5, title.position = c("right", "top")) +
+  tm_layout(title = "Modeled Probability of Human-Black Bear Conflict in California", title.size = 1.5, title.position = c("right", "top")) 
   tm_shape(bear_conflict_6414_sf) +
   tm_minimap() +
   tm_dots(col = "type",
-          palette = c("darkorange","violetred1","firebrick","darkorchid1"))
+          palette = c("darkorange","violetred1","firebrick","darkorchid1"),
+  title = "Type of Conflict")
   
 predicted_conflict_raster
   
@@ -116,6 +119,70 @@ CA_county_6414_sf <-
 ```
 
 ## Future - 2030
+
+```{r}
+# read in raster data
+model_2030_conflict_raster <- rast(here("data","projected_mod3_clim_map_squared.tif"))
+
+# check coordinate reference system
+
+model_conflict_CRS <- st_crs(model_2030_conflict_raster)
+
+model_conflict_CRS # ID = EPSG 6414
+
+CA_county_sf <- read_sf(here("data", "ca_counties", "CA_Counties_TIGER2016.shp")) %>% 
+   janitor::clean_names()
+
+CA_county_crs <- st_crs(CA_county_sf) 
+
+CA_county_crs # ID = "EPSG", 3857
+# not in the same coordinate reference system
+
+CA_county_6414 <- st_transform(CA_county_sf, 6414)
+
+# read in known bear conflict csv and convert to shapefile 
+
+bear_data_csv <- read_csv("data/WIR_clean.csv") %>%
+  mutate(date = lubridate::mdy_hm(incident_date),
+         year = lubridate::year(date))
+
+# set CRS for bear conflict to be the same as the raster
+bear_6414 <- st_crs(model_conflict_CRS)
+
+#bear_data wrangling
+
+bear_data_6414_sf <- bear_data_csv %>%
+  drop_na(latitude, longitude) %>%
+  select(c(-species, -behavior_observed, -incident_status)) %>%
+  st_as_sf(coords = c("latitude","longitude"), crs = bear_6414)
+
+bear_conflict_6414_sf <- read_sf(here("data","conflict_buffered_refined","conflict_buffered_refined.shp"))
+
+```
+
+
+```{r}
+conflict_2030_raster <- 
+  tm_shape(model_2030_conflict_raster) +
+  tm_raster(style= "order", palette = "viridis") + # order = 
+  tmap_mode(mode = "view") +
+  tm_layout(legend.outside = TRUE) +
+  tm_layout(title = "Modeled Probability of Human-Black Bear Conflict in California", title.size = 1.5, title.position = c("right", "top")) 
+  # tm_shape(bear_conflict_6414_sf) +
+  # tm_minimap() +
+  # tm_dots(col = "type",
+  #         palette = c("darkorange","violetred1","firebrick","darkorchid1"))
+  # 
+conflict_2030_raster
+  
+actual_conflict_sf <- tm_shape(bear_conflict_6414_sf) +
+  tm_dots(col = "type",
+          palette = c("darkorange","violetred1","firebrick","darkorchid1"))
+
+CA_county_6414_sf <- 
+   tm_shape(CA_county_6414) +
+   tm_polygons(alpha = 0.5, border.col = "darkblue") 
+```
 
 
 ```{r}
