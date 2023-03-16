@@ -39,7 +39,7 @@ tmapIcon <- tmap_icons(here("data","black_bear2.png"))
 
 #st_crs(ca_counties_shp) 3857
 
-# predicted conflict raster data
+# present predicted conflict raster data
 
 model_conflict_raster <- rast(here("data","mod3clim_map_squared.tif")) # CRS ID = EPSG 6414
 
@@ -62,6 +62,17 @@ predicted_conflict <- tm_shape(model_conflict_raster) +
             title.size = 1.5, title.position = c("right", "top")) +
   tm_minimap()
 
+# 2030 predicted conflict raster data
+
+# read in raster data
+model_2030_conflict_raster <- rast(here("data","projected_mod3_clim_map_squared.tif"))
+
+# check coordinate reference system
+
+model_2030_conflict_CRS <- st_crs(model_2030_conflict_raster)
+
+model_2030_conflict_CRS # ID = EPSG 6414
+
 
 ## start shiny
 
@@ -72,32 +83,32 @@ ui <- fluidPage(theme="ocean.css",
                                       sidebarPanel(h4("About the app developers:"),
                                                    tags$style("#project-grid {display: grid;
                       grid-template-columns: 100px 1fr;grid-gap: 10px;}"),
-                      h1('Project team'),
+                      h2('Project team'),
                       div(id = "project-grid",
                           div(img(src='grace.jpeg', style = 'border-radius: 50%', width = '100px')),
-                          div(h4('Claire Meuter'),
-                          p('Claire Meuter is a second-year MESM student specializing in Conservation Planning.
+                          div(h3('Claire Meuter'),
+                          h4('Claire Meuter is a second-year MESM student specializing in Conservation Planning.
                                                      As data manager on the Black Bear Aware team, Claire is excited to combine her group project results with Shiny App creation')),
                           div(img(src='grace.jpeg', style = 'border-radius: 50%', width = '100px')),
-                          div(h4('Grace Bianchi'),
-                              p('Some very interesting text about person 1. Some very interesting text about person 1. Some very interesting text about person 1. Some very interesting text about person 1.')),
+                          div(h3('Grace Bianchi'),
+                              h4('Some very interesting text about person 1. Some very interesting text about person 1. Some very interesting text about person 1. Some very interesting text about person 1.')),
                           ### katheryn
                           div(img(src='grace.jpeg', style = 'border-radius: 50%', width = '100px')),
-                          div(h4('Katheryn Moya'),
-                              p('Some very interesting text about person 1. Some very interesting text about person 1. Some very interesting text about person 1. Some very interesting text about person 1.'))),
+                          div(h3('Katheryn Moya'),
+                              h4('Some very interesting text about person 1. Some very interesting text about person 1. Some very interesting text about person 1. Some very interesting text about person 1.'))),
 
 
-                                                   h4("About the Data"),
+                                                   h2("About the Data"),
                                                    br(),"",
-                                                   p("The data for this project is provided by the ")),
-                                      mainPanel(h4(p("Purpose of the App")),
-                                                p("This project, in coorporation with California Department of Fish and Wildlife,
+                                                   h4("The data for this project is provided by the ")),
+                                      mainPanel(h1("Purpose of the App"),
+                                                h5("This project, in coorporation with California Department of Fish and Wildlife,
                                                   explores human-black bear conflict across California. By analyzing spatial data on
                                                   suitable bear habitat, human settlement locations, drought and fire extent and severity, and human-wildlife incident reports, we will develop a predictive model to assist wildlife managers in anticipating future conflict."),
-                                                p("Information about CDFW"),
-                                                p("Info about data"),
+                                                h5("Information about CDFW"),
+                                                h5("Info about data"),
                                                 br(),
-                                                p("For more information on this project, see the",  a("UCSB's Bren School Master's Directory", href = 'https://bren.ucsb.edu/projects/black-bear-aware-predicting-human-black-bear-conflict-likelihood-changing-climate'), "."),
+                                                h5("For more information on this project, see the",  a("UCSB's Bren School Master's Directory", href = 'https://bren.ucsb.edu/projects/black-bear-aware-predicting-human-black-bear-conflict-likelihood-changing-climate'), "."),
                                                 br(),
 
                                       )
@@ -119,9 +130,9 @@ ui <- fluidPage(theme="ocean.css",
                                                      selected = c("Depredation", "General Nuisance", "Potential Human Conflict", "Sighting")
                                                    )
                                       ), #End sidebarPanel widgets
-                                      mainPanel(h4(p("Wildlife conflict observations in California")),
-                                                p("The user has the opportunity to display conflict data at an annual or monthly scale to visualize the frequency of the various types of conflicts over the years and throughout the seasons."),
-                                                p("Maybe some info about the total number of observations? like n="),
+                                      mainPanel(h1("Wildlife conflict observations in California"),
+                                                h5("The user has the opportunity to display conflict data at an annual or monthly scale to visualize the frequency of the various types of conflicts over the years and throughout the seasons."),
+                                                h5("Maybe some info about the total number of observations? like n="),
                                         plotOutput("conflict_plot"),
                                         p("Figure 1. Wildlife Conflict observations since 2016 collected by the California's Department of Fish & Wildlife (n=4665)")
                                       ) # endconflict exploration mainPanel
@@ -143,7 +154,7 @@ ui <- fluidPage(theme="ocean.css",
                                               #   actionButton(inputId = "map_btn", label = "Generate Map")
 
                                     ), # end sidebar panel
-                                    mainPanel("Recorded Conflict Map",
+                                    mainPanel(h1("Recorded Conflict Map"),
                                               tmapOutput("tmapMap"),
 
 
@@ -151,11 +162,11 @@ ui <- fluidPage(theme="ocean.css",
 
                            ), # end  mappiing conflict tab panel
 
-                           tabPanel("Predicting Present-Day Conflict",
+                           tabPanel("Modeling Present Conflict",
                                     sidebarPanel("",
                                                  materialSwitch(
                                                    inputId = "overlap_switch1",
-                                                   label = "Overlap with Actual Conflict Occurrences:",
+                                                   label = "Overlap with WIR Observed Conflict Occurrences:",
                                                    value = FALSE,
                                                    status = "warning"
                                                  )
@@ -165,20 +176,20 @@ ui <- fluidPage(theme="ocean.css",
                                               tmapOutput("raster_conflict_map")
                                             )), # end main panel
 
-                           # tabPanel("Projecting Conflict in 2030",
-                           #          sidebarPanel("",
-                           #                       materialSwitch(
-                           #                         inputId = "overlap_switch2",
-                           #                         label = "Overlap with Actual Conflict Occurrences:",
-                           #                         value = FALSE,
-                           #                         status = "warning"
-                           #                       )
-                           #                       # end switch button
-                           #          ), # end sidebar panel
-                           #          mainPanel("",
-                           #                    tmapOutput("2030_raster_conflict_map")
+                           tabPanel("Projecting Conflict in 2030",
+                                    sidebarPanel("",
+                                                 materialSwitch(
+                                                   inputId = "overlap_switch2",
+                                                   label = "Overlap with WIR Observed Conflict Occurrences:",
+                                                   value = FALSE,
+                                                   status = "warning"
+                                                 )
+                                                 # end switch button
+                                    ), # end sidebar panel
+                                    mainPanel("",
+                                              tmapOutput("raster_2030_conflict_map")
                                     ) # end main panel
-                ) # end navbarPAge
+                ))) # end navbarPAge
 
 server <- function(input, output){
 
@@ -270,15 +281,15 @@ server <- function(input, output){
 #   })
 # })
 
-# output conflict probability raster map - Katheryn
+# output present conflict probability raster map - Katheryn
 
-  test <- reactive({
+  test1 <- reactive({
     input$overlap_switch1
   })
 
   output$raster_conflict_map <- renderTmap({
 
-   over <- tm_shape(model_conflict_raster) +
+   over1 <- tm_shape(model_conflict_raster) +
       tm_raster(style= "order", palette = "viridis") + # order =
       tmap_mode(mode = "view") +
       tm_layout(legend.outside = TRUE) +
@@ -286,16 +297,39 @@ server <- function(input, output){
                 title.size = 1.5, title.position = c("right", "top")) +
       tm_minimap()
 
-     if(test() == TRUE){
-       over<- over +
+     if(test1() == TRUE){
+       over1 <- over1 +
          tm_shape(bear_conflict_6414_sf) +
          tm_dots(col = "type",
                  palette = c("darkorange","violetred1","firebrick","darkorchid1"))
     }
-    over
+    over1
   })
 
+# output 2030 conflict probability raster map - Katheryn
 
+  test2 <- reactive({
+    input$overlap_switch2
+  })
+
+  output$raster_2030_conflict_map <- renderTmap({
+
+    over2 <- tm_shape(model_2030_conflict_raster) +
+      tm_raster(style= "order", palette = "viridis") + # order =
+      tmap_mode(mode = "view") +
+      tm_layout(legend.outside = TRUE) +
+      tm_layout(title = "Modeled Present Probability of Human-Black Bear Conflict in California",
+                title.size = 1.5, title.position = c("right", "top")) +
+      tm_minimap()
+
+    if(test2() == TRUE){
+      over2 <- over2 +
+        tm_shape(bear_conflict_6414_sf) +
+        tm_dots(col = "type",
+                palette = c("darkorange","violetred1","firebrick","darkorchid1"))
+    }
+    over2
+  })
 
 
  # end conflict probability raster output
