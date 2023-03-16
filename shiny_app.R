@@ -85,26 +85,33 @@ ui <- fluidPage(theme="ocean.css",
                       grid-template-columns: 100px 1fr;grid-gap: 10px;}"),
                       h2('Project team'),
                       div(id = "project-grid",
-                          div(img(src='grace.jpeg', style = 'border-radius: 50%', width = '100px')),
+                          div(img(src='claire.jpg', style = 'border-radius: 50%', width = '100px')),
                           div(h3('Claire Meuter'),
-                          h4('Claire Meuter is a second-year MESM student specializing in Conservation Planning.
-                                                     As data manager on the Black Bear Aware team, Claire is excited to combine her group project results with Shiny App creation')),
+                          h4('Claire Meuter is a 2nd year MESM student specializing in Conservation Planning. She is data manager for her masters group project, Black Bear Aware, which studies human-black bear conflict in California. She is excited to combine her research results with the Shiny app interface! ')), #end Claire bio
                           div(img(src='grace.jpeg', style = 'border-radius: 50%', width = '100px')),
                           div(h3('Grace Bianchi'),
-                              h4('Some very interesting text about person 1. Some very interesting text about person 1. Some very interesting text about person 1. Some very interesting text about person 1.')),
+                              h4('Grace Bianchi is a 2nd year MESM student specializing in Energy & Climate and Pollution, Prevention, & Remediation.
+                                 Her master’s group project focused on creating model to identify the best regions in the United States for rooftop PV on
+                                 apartment buildings based on investment favorability.')), #end grace bio
                           ### katheryn
-                          div(img(src='grace.jpeg', style = 'border-radius: 50%', width = '100px')),
+                          div(img(src='Katheryn.jpeg', style = 'border-radius: 50%', width = '100px')),
                           div(h3('Katheryn Moya'),
-                              h4('Some very interesting text about person 1. Some very interesting text about person 1. Some very interesting text about person 1. Some very interesting text about person 1.'))),
+                              h4('Katheryn Moya is a 2nd year MESM student specializing in Conservation Planning.
+                                 Her master’s group project is focused on projecting the impacts of resource extraction on wildlife habitat
+                                 in the Greater Chilkat Watershed in Southeastern Alaska.'))), #end katheryn bio
 
 
                                                    h2("About the Data"),
                                                    br(),"",
                                                    h4("The data for this project is provided by the ")),
                                       mainPanel(h1("Purpose of the App"),
-                                                h5("This project, in coorporation with California Department of Fish and Wildlife,
-                                                  explores human-black bear conflict across California. By analyzing spatial data on
-                                                  suitable bear habitat, human settlement locations, drought and fire extent and severity, and human-wildlife incident reports, we will develop a predictive model to assist wildlife managers in anticipating future conflict."),
+                                                h5("This app is intended to allow users to explore human-black bear conflict across California.
+                                                   Human-black bear conflict can be defined as any interaction between humans and black bears
+                                                   that is perceived as a negative interaction by either party. Typically, human-black bear conflict looks like bears utilizing human resources for food,
+                                                   often livestock and trash."),
+
+                                                div(img(src = "dumpster_bear.webp", width = '500px')),
+                                                div(),
                                                 h5("Information about CDFW"),
                                                 h5("Info about data"),
                                                 br(),
