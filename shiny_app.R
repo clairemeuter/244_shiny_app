@@ -126,7 +126,7 @@ ui <- fluidPage(theme="ocean.css",
                                       tabPanel("The Data")
                            ), # end navbar menu with more icon
 
-                           tabPanel("Conflict Exploration", #this is how we add tabs.
+                           tabPanel("Exploration", #this is how we add tabs.
                                     sidebarLayout(
                                       sidebarPanel("",
                                                    radioButtons(
@@ -182,7 +182,6 @@ ui <- fluidPage(theme="ocean.css",
 
                            ), # end  mappiing conflict tab panel
                       navbarMenu("Projections",
-
                            tabPanel("Modeling Present Conflict",
                                     sidebarPanel("",
                                                  materialSwitch(
@@ -193,11 +192,18 @@ ui <- fluidPage(theme="ocean.css",
                                                  )
                                               # end switch button
                                              ), # end sidebar panel
-                                    mainPanel("",
+                                    mainPanel(h1("Modeling Present Conflict"),
+                                              br(),
+                                                h5("In partnership with the California Department of Fish and Wildlife,
+                                                       the Black Bear Aware team created a model to predict the likelihood of human-black bear conflict under a changing fire regime. The first step to achieving this goal was to model the likelihood of conflict in California in present-day. Using a Resource Selection Probability Function, a common tool in spatial ecology, the team was able to assess the probability of black bear resource use across the state under current conditions to determine where they may come into conflict with humans."),
+                                               br(),
+                                              h5("Environmental variables important to black bear resource use include land cover, elevation, terrain ruggedness, forest density, distance to forest cover, and distance to streams. Human conditions used in the model included road density, distance to roads, distance to urban areas, an ddistance to recreational areas."),
+                                              br(),
+                                              h5("The following map displays the results of the model, with areas in yellow depicting  areas with the highest probability of human-black bear conflict. Observation points of human-black bear conflict from 2016 to 2022 as recorded in the WIR can be overlapped using the toggle switch to assess the model's accuracy."),
                                               tmapOutput("raster_conflict_map")
                                             )), # end main panel
 
-                           tabPanel("Projecting Conflict in 2030",
+                           tabPanel("Conflict in 2030",
                                     sidebarPanel("",
                                                  materialSwitch(
                                                    inputId = "overlap_switch2",
@@ -327,18 +333,20 @@ output$reactive_df <- renderDT(contents())
   output$raster_conflict_map <- renderTmap({
 
    over1 <- tm_shape(model_conflict_raster) +
-      tm_raster(style= "order", palette = "viridis") + # order =
+      tm_raster(style= "order", palette = "viridis", title = "Conflict Probability") + # order =
       tmap_mode(mode = "view") +
-      tm_layout(legend.outside = TRUE) +
-      tm_layout(title = "Modeled Present Probability of Human-Black Bear Conflict in California",
-                title.size = 1.5, title.position = c("right", "top")) +
+      tm_layout(title = "Present Human-Black Bear Conflict Probability in CA",
+                title.size = 1.5,
+                title.position = c("right", "top"),
+                legend.outside = TRUE) +
       tm_minimap()
 
      if(test1() == TRUE){
        over1 <- over1 +
          tm_shape(bear_conflict_6414_sf) +
          tm_dots(col = "type",
-                 palette = c("darkorange","violetred1","firebrick","darkorchid1"))
+                 palette = c("#dfd60", "#aca0bd", "#778aab", "#b9cdca"),
+                 title = "Types of Conflict")
     }
     over1
   })
@@ -363,7 +371,7 @@ output$reactive_df <- renderDT(contents())
       over2 <- over2 +
         tm_shape(bear_conflict_6414_sf) +
         tm_dots(col = "type",
-                palette = c("darkorange","violetred1","firebrick","darkorchid1"))
+                palette = c("#dfd60","#aca0bd","#778aab","#b9cdca"))
     }
     over2
   })
