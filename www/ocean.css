@@ -49,6 +49,7 @@ display: inline-block;
 
   background-color: #D5CFBE;
     color: #2A3759;
+
 }
 
 
@@ -174,7 +175,9 @@ div.tab-content{
 
 
 
-
+.well{
+  float: left;
+}
 
 
 
