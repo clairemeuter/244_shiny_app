@@ -98,21 +98,21 @@ display.brewer.pal(4, "YlGnBu")
 viridis::viridis(4)
 
 
-transparent_color1 <- ("#440154FF", alpha = 0.5) 
+
 
   
 raster_colors <- c("#FFFFCC", "#A1DAB4", "#41B6C4", "#225EA8")
 
 raster_alpha <- c(0.5, 0.5, 1, 1)
 
+
 ```
 
 
 ```{r}
-
 predicted_conflict_raster <- 
   tm_shape(model_conflict_raster) +
-  tm_raster(breaks= seq(0, 1, by= 0.1),
+  tm_raster(breaks= seq(0, 1, by= 0.25),
             palette = "viridis",
             title = "Probability (%)") + # order =
   tmap_mode(mode = "view") +
@@ -123,14 +123,19 @@ predicted_conflict_raster <-
   tm_shape(bear_conflict_6414_sf) +
   tm_minimap() +
   tm_dots(col = "type",
-          palette = c("darkorange","violetred1","firebrick","darkorchid1"),
-  title = "Type of Conflict")
+          palette = c("#DF7D60", "#ACA0BD", "#778AAB", "#B9CDCA"),
+  title = "Type of Conflict")  
+
+ 
   
 predicted_conflict_raster
-  
+```
+
+
+```{r}
 actual_conflict_sf <- tm_shape(bear_conflict_6414_sf) +
   tm_dots(col = "type",
-          c("#dfd60", "#aca0bd", "#778aab", "#b9cdca"))
+          palette = c("#dfd60", "#aca0bd", "#778aab", "#b9cdca"))
           # palette = c("darkorange","violetred1","firebrick","darkorchid1"))
 
 CA_county_6414_sf <- 

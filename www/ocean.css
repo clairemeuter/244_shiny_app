@@ -146,6 +146,17 @@ h5{ /* main body text */
 
 }
 
+h6{ /* subtitle main body  */
+  font-family: 'Lato', sans-serif;
+  font-weight: 250;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1.15;
+  letter-spacing: -.02em;
+  color: #C1C39B; /* light palette green */
+  -webkit-font-smoothing: antialiased;
+
+}
 
 div.tab-content{
 
