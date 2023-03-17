@@ -260,7 +260,7 @@ ui <- fluidPage(theme="ocean.css",
                                                              selected = 2020
                                                  ), #end select input for year
 
-                                              #   actionButton(inputId = "map_btn", label = "Generate Map")
+
 
                                     ), # end sidebar panel
                                     mainPanel(h1("Recorded Conflict Map"),
@@ -435,7 +435,7 @@ server <- function(input, output){
     tm_shape(county_map()) +
       tm_polygons(alpha=0, border.col = "black", colorNA = NULL) +
     tm_shape(dataTmap()) +
-      tm_symbols(shape = "type", shapes = tmapIcons, border.lwd = 1, size = 0.5, border.alpha = 1, border.col = "white") +
+      tm_symbols(shape = "type", shapes = tmapIcons, border.lwd = 1, size = 0.7, border.alpha = 1, border.col = "black") +
       tmap_mode("view")  +
       tmap_options(basemaps = "OpenStreetMap")
   })
