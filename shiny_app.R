@@ -267,7 +267,7 @@ ui <- fluidPage(theme="ocean.css",
 
                                               h5("The data below spatially displays reports of human-black bear conflict across California
                                                  as recorded by the California Department of Fish and Wildlife (CDFW) from 2016 to March 2022.
-                                                 Data is recorded by CDFW's Wildlife Incident Reporting System (WIR). Each bear icon indicates a reported human-black bear conflict."),
+                                                 Data is recorded by CDFW's Wildlife Incident Reporting System (WIR). Each bear icon indicates a reported human-black bear conflict and is colored based on type of conflict."),
                                               tmapOutput("tmapMap"),
                                               br(),
                                              # h1("table of counts"),
