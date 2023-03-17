@@ -81,11 +81,34 @@ ui <- fluidPage(theme="ocean.css",
                 navbarPage("Black Bear Aware", #navbarPage allows us to create our tabs
                            navbarMenu("About", icon = icon("info-circle"),
                                       tabPanel("The Project",
-                                               mainPanel(h1("Purpose of the App"),
+                                               sidebarLayout(
+                                                 sidebarPanel(h2("What is the ''Black Bear Aware'' project?"),
+                                                              h4("Black Bear Aware is a master’s group thesis project from the Bren School
+                                                                 of Environmental Science and Management at the University of California,
+                                                                 Santa Barbara. This project is in collaboration with the California Department
+                                                                 of Fish and Wildlife (CDFW). The Black Bear Aware project aims to model likely
+                                                                 regions of human-black bear conflict and inform agencies like CDFW on where to
+                                                                 focus prevention, education, and mediation efforts. Learn more about the Black Bear
+                                                                 Aware project ",a("here.",
+                                                                                   href = 'https://bren.ucsb.edu/projects/black-bear-aware-predicting-human-black-bear-conflict-likelihood-changing-climate')," and in the About the Data tab."),
+                                                   h2("Reporting and Preventing Human-Wildlife Conflict:"),
+                                                              br(),
+                                                              h4("Curious what the Wildlife Incident Reporting (WIR) form looks like?
+                                                                 Have a wildlife encounter you want to share with CDFW?
+                                                                 Check out the WIR system ",a("here.",href = 'https://apps.wildlife.ca.gov/wir'),"."),
+                                                              h4("Explore CDFW's informational human-wildlife conflict page ",a("here",href = 'https://wildlife.ca.gov/Conservation/Laboratories/Wildlife-Health/HWC-Program#551962502-black-bear'),"."),
+                                                              ), #end sidebar layout
+                                               mainPanel(h6("Purpose of the App"),
                                                          h5("This app is intended to allow users to explore human-black bear conflict across California.
                                                    Human-black bear conflict can be defined as any interaction between humans and black bears
                                                    that is perceived as a negative interaction by either party. Typically, human-black bear conflict looks like bears utilizing human resources for food,
                                                    often livestock and trash."),
+                                                   h6("Navigating the App"),
+                                                   h5("Click on the exploration tab to see the types of human-black bear conflict recorded by the California Department of Fish and Wildlife
+                                                      from 2016 to early 2022. In the Mapping Conflict tab, explore recorded human-black bear conflict across California by county and year.
+                                                      Finally, see the results of modeling for human-black bear conflict across California in the projections tab. Select “Modeling Present Conflict”
+                                                      to see the % likelihood of human-black bear conflict across California under present-day environmental conditions. Select “Conflict in 2030” to
+                                                      see the % likelihood of human-black bear conflict across California in the year 2030, with environmental conditions based on climate projections."),
 
                                                    div(img(src = "dumpster_bear.webp", width = '500px')),
                                                    div(),
@@ -94,11 +117,13 @@ ui <- fluidPage(theme="ocean.css",
 
                                                    br(),
                                                    h5("For more information on this project, see the",  a("UCSB's Bren School Master's Directory", href = 'https://bren.ucsb.edu/projects/black-bear-aware-predicting-human-black-bear-conflict-likelihood-changing-climate'), "."),
-                                                   br(),
+                                                   br()
 
-                                               )), # end About the Data tab pan
+                                               ), #end mainPanel
+
+                                               )), # end About the project tab pan
                                       tabPanel("The Team",
-                      h2('Project team'),
+                    #  h2('Project team'),
                       tags$style("#project-grid {display: grid;grid-template-columns: 100px 1fr;grid-gap: 10px;}"),
                       div(id = "project-grid"),
                           fluidRow(column(4,
@@ -115,15 +140,13 @@ ui <- fluidPage(theme="ocean.css",
                                  Her master’s group project focused on creating model to identify the best regions in the United States for rooftop PV on
                                  apartment buildings based on investment favorability.')), # end grace bio
 
-                                  div(img(src='Katheryn.jpeg', style = 'border-radius: 50%', width = '100px'), style="text-align: center;"),
-
                                  column(4,
+                                        div(img(src='Katheryn.jpeg', style = 'border-radius: 50%', width = '110px', height = "145px"), style="text-align: center;"),
                                          h2('Katheryn Moya'),
                                           h5('Katheryn Moya is a 2nd year MESM student specializing in Conservation Planning.
                                  Her master’s group project is focused on projecting the impacts of resource extraction on wildlife habitat
                                  in the Greater Chilkat Watershed in Southeastern Alaska.')),
                                  )),
-
 
                                       tabPanel("The Data")
                            ), # end navbar menu with more icon
@@ -131,9 +154,14 @@ ui <- fluidPage(theme="ocean.css",
                            tabPanel("Exploration", #this is how we add tabs.
                                     sidebarLayout(
                                       sidebarPanel("",
+                                                   h2("Using this tool:"),
+                                                   h3("Conflict reports can be displayed by yearly or monthly counts.
+                                                      Select montly to observe seasonal behaviors of bears."),
+                                                   h3("Select different conflict types to vizualize the
+                                                      frequency of types of conflict reported"),
                                                    radioButtons(
                                                      inputId = "select_date",
-                                                     label = "Choices",
+                                                     label = "Yearly or Monthly",
                                                      choices = c("Yearly"="year", "Monthly"="month"),
                                                      selected = "year"
                                                    ),
@@ -148,9 +176,7 @@ ui <- fluidPage(theme="ocean.css",
                                       ), #End sidebarPanel widgets
                                       mainPanel(h1("Human-black bear conflict observations in California"),
                                                 h5("The data displayed below shows reports of human-black bear conflict across California
-                                                   as recorded by the California department of Fish and Wildlife (CDFW) from 2016 to March of 2020. Data is recorded by CDFW's Wildlife Incident Reporting System (WIR)."),
-                                                h5("- Conflict reports can be displayed by yearly or monthly counts. Select montly to observe seasonal behaviors of bears."),
-                                                h5("-Select different conflict types to vizualize the frequency of types of conflict reported."),
+                                                   as recorded by the California department of Fish and Wildlife (CDFW) from 2016 to March of 2022. Data is recorded by CDFW's Wildlife Incident Reporting System (WIR)."),
                                                 h5("Maybe some info about the total number of observations? like n="),
                                         plotOutput("conflict_plot"),
                                         p("Figure 1. Wildlife Conflict observations since 2016 collected by the California's Department of Fish & Wildlife (n=4665)")
@@ -159,7 +185,9 @@ ui <- fluidPage(theme="ocean.css",
                            ),
                            tabPanel("Mapping Conflict",
 
-                                    sidebarPanel("Conflict occurrences",
+                                    sidebarPanel("",
+                                                 h2("Using this tool:"),
+                                                 h3("Select by county to explore which counties in California are conflict-prone. Select by year to compare changes in conflict on counties over time."),
                                                  selectInput(inputId = "select_county", label = "Select County",
                                                              choices = unique(bear_data_sf$county_name),
                                                              selected = "Santa Barbara"
@@ -174,6 +202,10 @@ ui <- fluidPage(theme="ocean.css",
 
                                     ), # end sidebar panel
                                     mainPanel(h1("Recorded Conflict Map"),
+                                              br(),
+                                              h5("The data below spatial displays reports of human-black bear conflict across California
+                                                 as recorded by the California Department of Fish and Wildlife (CDFW) from 2016 to March 2022.
+                                                 Data is recorded by CDFW's Wildlife Incident Reporting System (WIR)."),
                                               tmapOutput("tmapMap"),
                                               br(),
                                               h1("table of counts"),
