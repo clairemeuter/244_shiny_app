@@ -79,50 +79,57 @@ model_2030_conflict_CRS # ID = EPSG 6414
 
 ui <- fluidPage(theme="ocean.css",
                 navbarPage("Black Bear Aware", #navbarPage allows us to create our tabs
-                           tabPanel("About",
-                                    sidebarLayout(
-                                      sidebarPanel(h4("About the app developers:"),
-                                                   tags$style("#project-grid {display: grid;
-                      grid-template-columns: 100px 1fr;grid-gap: 10px;}"),
-                      h2('Project team'),
-                      div(id = "project-grid",
-                          div(img(src='claire.jpg', style = 'border-radius: 50%', width = '100px')),
-                          div(h3('Claire Meuter'),
-                          h4('Claire Meuter is a 2nd year MESM student specializing in Conservation Planning. She is data manager for her masters group project, Black Bear Aware, which studies human-black bear conflict in California. She is excited to combine her research results with the Shiny app interface! ')), #end Claire bio
-                          div(img(src='grace.jpeg', style = 'border-radius: 50%', width = '100px')),
-                          div(h3('Grace Bianchi'),
-                              h4('Grace Bianchi is a 2nd year MESM student specializing in Energy & Climate and Pollution, Prevention, & Remediation.
-                                 Her master’s group project focused on creating model to identify the best regions in the United States for rooftop PV on
-                                 apartment buildings based on investment favorability.')), #end grace bio
-                          ### katheryn
-                          div(img(src='Katheryn.jpeg', style = 'border-radius: 50%', width = '100px')),
-                          div(h3('Katheryn Moya'),
-                              h4('Katheryn Moya is a 2nd year MESM student specializing in Conservation Planning.
-                                 Her master’s group project is focused on projecting the impacts of resource extraction on wildlife habitat
-                                 in the Greater Chilkat Watershed in Southeastern Alaska.'))), #end katheryn bio
-
-
-                                                   h2("About the Data"),
-                                                   br(),"",
-
-                                                   h4("The data for this project is provided by the ")),
-                                      mainPanel(h1("Purpose of the App"),
-                                                h5("This app is intended to allow users to explore human-black bear conflict across California.
+                           navbarMenu("About", icon = icon("info-circle"),
+                                      tabPanel("The Project",
+                                               mainPanel(h1("Purpose of the App"),
+                                                         h5("This app is intended to allow users to explore human-black bear conflict across California.
                                                    Human-black bear conflict can be defined as any interaction between humans and black bears
                                                    that is perceived as a negative interaction by either party. Typically, human-black bear conflict looks like bears utilizing human resources for food,
                                                    often livestock and trash."),
 
-                                                div(img(src = "dumpster_bear.webp", width = '500px')),
-                                                div(),
-                                                h5("Information about CDFW"),
-                                                h5("Info about data"),
+                                                   div(img(src = "dumpster_bear.webp", width = '500px')),
+                                                   div(),
+                                                   h5("Information about CDFW"),
+                                                   h5("Info about data"),
 
-                                                br(),
-                                                h5("For more information on this project, see the",  a("UCSB's Bren School Master's Directory", href = 'https://bren.ucsb.edu/projects/black-bear-aware-predicting-human-black-bear-conflict-likelihood-changing-climate'), "."),
-                                                br(),
+                                                   br(),
+                                                   h5("For more information on this project, see the",  a("UCSB's Bren School Master's Directory", href = 'https://bren.ucsb.edu/projects/black-bear-aware-predicting-human-black-bear-conflict-likelihood-changing-climate'), "."),
+                                                   br(),
 
-                                      )
-                                    )), #end tabpanel thing 1
+                                               )), # end About the Data tab pan
+                                      tabPanel("The Team",
+                                               h4("About the app developers:"),
+
+                      h2('Project team'),
+                      tags$style("#project-grid {display: grid;grid-template-columns: 100px 1fr;grid-gap: 10px;}"),
+                      div(id = "project-grid"),
+                          fluidRow(column(4,
+                                         div(img(src='claire.jpg', style = 'border-radius: 50%', width = '100px')),
+                                          h3('Claire Meuter'),
+                                          h5('Claire Meuter is a 2nd year MESM student specializing in Conservation Planning.
+                                             She is data manager for her masters group project, Black Bear Aware, which studies human-black bear conflict in California.
+                                             She is excited to combine her research results with the Shiny app interface! ')), #end Claire bio
+
+                                   column(4,
+                                          div(img(src='grace.jpeg', style = 'border-radius: 50%', width = '100px')), #end claire bio
+                                          h2('Grace Bianchi'),
+                                          h5('Grace Bianchi is a 2nd year MESM student specializing in Energy & Climate and Pollution, Prevention, & Remediation.
+                                 Her master’s group project focused on creating model to identify the best regions in the United States for rooftop PV on
+                                 apartment buildings based on investment favorability.')), # end grace bio
+
+                                  div(img(src='Katheryn.jpeg', style = 'border-radius: 50%', width = '100px')),
+
+                                 column(4,
+
+                                         h3('Katheryn Moya'),
+                                          h5('Katheryn Moya is a 2nd year MESM student specializing in Conservation Planning.
+                                 Her master’s group project is focused on projecting the impacts of resource extraction on wildlife habitat
+                                 in the Greater Chilkat Watershed in Southeastern Alaska.')),
+                                 )),
+
+
+                                      tabPanel("The Data")
+                           ), # end navbar menu with more icon
 
                            tabPanel("Conflict Exploration", #this is how we add tabs.
                                     sidebarLayout(
@@ -179,6 +186,7 @@ ui <- fluidPage(theme="ocean.css",
                                     ) # end main panel
 
                            ), # end  mappiing conflict tab panel
+                      navbarMenu("Projections",
 
                            tabPanel("Modeling Present Conflict",
                                     sidebarPanel("",
@@ -206,8 +214,9 @@ ui <- fluidPage(theme="ocean.css",
                                     ), # end sidebar panel
                                     mainPanel("",
                                               tmapOutput("raster_2030_conflict_map")
-                                    ) # end main panel
-                ))) # end navbarPAge
+                                    )) # end main panel
+                      )
+                )) # end navbarPAge
 
 server <- function(input, output){
 
