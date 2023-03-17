@@ -34,7 +34,10 @@ ca_counties_shp <- read_sf(here("data/CA_Counties/CA_counties_TIGER2016.shp")) %
   janitor::clean_names() %>%
   select(name)
 
-tmapIcon <- tmap_icons(here("data","black_bear2.png"))
+tmapIcons <- tmap_icons(c(here("data","dep_bear.png"),
+                         here("data","gen_bear.png"),
+                         here("data","po_bear.png"),
+                         here("data","sight_bear.png")))
 
 # read in data & change label - Katheryn
 
@@ -262,12 +265,12 @@ ui <- fluidPage(theme="ocean.css",
                                     ), # end sidebar panel
                                     mainPanel(h1("Recorded Conflict Map"),
 
-                                              h5("The data below spatial displays reports of human-black bear conflict across California
+                                              h5("The data below spatially displays reports of human-black bear conflict across California
                                                  as recorded by the California Department of Fish and Wildlife (CDFW) from 2016 to March 2022.
-                                                 Data is recorded by CDFW's Wildlife Incident Reporting System (WIR)."),
+                                                 Data is recorded by CDFW's Wildlife Incident Reporting System (WIR). Each bear icon indicates a reported human-black bear conflict."),
                                               tmapOutput("tmapMap"),
                                               br(),
-                                              h1("table of counts"),
+                                             # h1("table of counts"),
                                               DTOutput("reactive_df"),
 
 
@@ -293,18 +296,31 @@ ui <- fluidPage(theme="ocean.css",
                                               # end switch button
                                              ), # end sidebar panel
                                     mainPanel(h1("Modeling Present Conflict"),
-                                              br(),
-                                                h5("In partnership with the California Department of Fish and Wildlife,
-                                                       the Black Bear Aware team created a model to predict the likelihood of human-black bear conflict under a changing fire regime. The first step to achieving this goal was to model the likelihood of conflict in California in present-day. Using a Resource Selection Probability Function, a common tool in spatial ecology, the team was able to assess the probability of black bear resource use across the state under current conditions to determine where they may come into conflict with humans."),
-                                               br(),
-                                              h5("Environmental variables important to black bear resource use include land cover, elevation, terrain ruggedness, forest density, distance to forest cover, and distance to streams. Human conditions used in the model included road density, distance to roads, distance to urban areas, an ddistance to recreational areas."),
-                                              br(),
-                                              h5("The following map displays the results of the model, with areas in yellow depicting  areas with the highest probability of human-black bear conflict. Observation points of human-black bear conflict from 2016 to 2022 as recorded in the WIR can be overlapped using the toggle switch to assess the model's accuracy."),
-                                              tmapOutput("raster_conflict_map")
+
+                                                h5("In partnership with the California Department of Fish and
+                                                   Wildlife, the Black Bear Aware team created a model to predict
+                                                   the likelihood of human-black bear conflict in California. The
+                                                   most parsimonious model was selected, which used the following
+                                                   variables: elevation, land cover, distance to forests, population
+                                                   density, distance to recreational areas, distance to streams, terrain ruggedness,
+                                                   distance to urban areas, distance to recent fires, and drought."),
+
+                                              h5("The following map displays the results of the model,
+                                                 with areas in yellow depicting areas with the highest probability
+                                                 (75% to 100%) of human-black bear conflict."),
+
+                                             tmapOutput("raster_conflict_map")
                                             )), # end main panel
 
                            tabPanel("Conflict in 2030",
                                     sidebarPanel("",
+                                                 h2("Using this tool:"),
+                                                 h3("Use the interactive map interface to zoom into regions of
+                                                    California and explore conflict likelihood."),
+                                                 h3("Observation points of human-black bear conflict from 2016
+                                                    to 2022 as recorded in the WIR can be overlapped using the
+                                                    toggle switch to assess the difference between reported
+                                                    (actual) conflict and predicted conflictin 2030."),
                                                  materialSwitch(
                                                    inputId = "overlap_switch2",
                                                    label = "Overlap with WIR Observed Conflict Occurrences:",
@@ -314,6 +330,20 @@ ui <- fluidPage(theme="ocean.css",
                                                  # end switch button
                                     ), # end sidebar panel
                                     mainPanel("",
+                                              h1("Modeling Future Conflict (2030)"),
+                                              h5("In partnership with the California Department of Fish and
+                                                 Wildlife, the Black Bear Aware team created a model to predict
+                                                 the likelihood of human-black bear conflict in California.
+                                                 The most parsimonious model was selected, which used the following
+                                                 variables: elevation, land cover, distance to forests, population
+                                                 density, distance to recreational areas, distance to streams, terrain
+                                                 ruggedness, distance to urban areas, distance to recent fires, and
+                                                 drought. By integrating climate predictions for 2030, the team produced
+                                                 a map of the likelihood of conflict across California in 2030."),
+                                              h5("The following map displays the results of the model, with areas in yellow
+                                                 depicting areas with the highest probability (75% to 100%) of human-black bear conflict
+                                                 in 2030."),
+
                                               tmapOutput("raster_2030_conflict_map")
                                     )) # end main panel
                       )
@@ -405,7 +435,7 @@ server <- function(input, output){
     tm_shape(county_map()) +
       tm_polygons(alpha=0, border.col = "black", colorNA = NULL) +
     tm_shape(dataTmap()) +
-      tm_symbols(shape = tmapIcon, border.lwd = 1, size = 0.5, border.alpha = 1, border.col = "white") +
+      tm_symbols(shape = "type", shapes = tmapIcons, border.lwd = 1, size = 0.5, border.alpha = 1, border.col = "white") +
       tmap_mode("view")  +
       tmap_options(basemaps = "OpenStreetMap")
   })
