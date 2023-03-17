@@ -72,7 +72,7 @@ h1 { /* big titles for descriptions */
   font-size: 32px;
   line-height: 1.15;
   letter-spacing: -.02em;
-  color: #a3a58e;
+  color: #DDBB98; /* terracotta */
   -webkit-font-smoothing: antialiased;
 }
 
@@ -117,10 +117,10 @@ h5{ /* main body text */
   font-family: 'Lato', sans-serif;
   font-weight: 100;
   font-style: normal;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.15;
   letter-spacing: -.02em;
-  color: #a3a58e;
+  color: #C1C39B; /* light palette green */
   -webkit-font-smoothing: antialiased;
 
 }
@@ -130,11 +130,11 @@ div.tab-content{
 
   font-family: 'Lato', sans-serif;
   font-weight: 100;
-  font-style: normal;
+  font-style: bold;
   font-size: 16px;
   line-height: 1.15;
   letter-spacing: -.02em;
-  color: black;
+  color: #354138;
   -webkit-font-smoothing: antialiased;
 }
 
