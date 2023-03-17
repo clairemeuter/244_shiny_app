@@ -98,30 +98,27 @@ ui <- fluidPage(theme="ocean.css",
 
                                                )), # end About the Data tab pan
                                       tabPanel("The Team",
-                                               h4("About the app developers:"),
-
                       h2('Project team'),
                       tags$style("#project-grid {display: grid;grid-template-columns: 100px 1fr;grid-gap: 10px;}"),
                       div(id = "project-grid"),
                           fluidRow(column(4,
-                                         div(img(src='claire.jpg', style = 'border-radius: 50%', width = '100px')),
-                                          h3('Claire Meuter'),
+                                         div(img(src='claire.jpg', style = 'border-radius: 50%', width = '100px'), style="text-align: center;"),
+                                          h2('Claire Meuter'),
                                           h5('Claire Meuter is a 2nd year MESM student specializing in Conservation Planning.
                                              She is data manager for her masters group project, Black Bear Aware, which studies human-black bear conflict in California.
                                              She is excited to combine her research results with the Shiny app interface! ')), #end Claire bio
 
                                    column(4,
-                                          div(img(src='grace.jpeg', style = 'border-radius: 50%', width = '100px')), #end claire bio
+                                          div(img(src='grace.jpeg', style = 'border-radius: 50%', width = '100px'), style="text-align: center;"), #end claire bio
                                           h2('Grace Bianchi'),
                                           h5('Grace Bianchi is a 2nd year MESM student specializing in Energy & Climate and Pollution, Prevention, & Remediation.
                                  Her master’s group project focused on creating model to identify the best regions in the United States for rooftop PV on
                                  apartment buildings based on investment favorability.')), # end grace bio
 
-                                  div(img(src='Katheryn.jpeg', style = 'border-radius: 50%', width = '100px')),
+                                  div(img(src='Katheryn.jpeg', style = 'border-radius: 50%', width = '100px'), style="text-align: center;"),
 
                                  column(4,
-
-                                         h3('Katheryn Moya'),
+                                         h2('Katheryn Moya'),
                                           h5('Katheryn Moya is a 2nd year MESM student specializing in Conservation Planning.
                                  Her master’s group project is focused on projecting the impacts of resource extraction on wildlife habitat
                                  in the Greater Chilkat Watershed in Southeastern Alaska.')),
