@@ -98,7 +98,7 @@ ui <- fluidPage(theme="ocean.css",
 
                                                )), # end About the Data tab pan
                                       tabPanel("The Team",
-                      h2('Project team'),
+                    #  h2('Project team'),
                       tags$style("#project-grid {display: grid;grid-template-columns: 100px 1fr;grid-gap: 10px;}"),
                       div(id = "project-grid"),
                           fluidRow(column(4,
@@ -115,15 +115,13 @@ ui <- fluidPage(theme="ocean.css",
                                  Her master’s group project focused on creating model to identify the best regions in the United States for rooftop PV on
                                  apartment buildings based on investment favorability.')), # end grace bio
 
-                                  div(img(src='Katheryn.jpeg', style = 'border-radius: 50%', width = '100px'), style="text-align: center;"),
-
                                  column(4,
+                                        div(img(src='Katheryn.jpeg', style = 'border-radius: 50%', width = '110px', height = "145px"), style="text-align: center;"),
                                          h2('Katheryn Moya'),
                                           h5('Katheryn Moya is a 2nd year MESM student specializing in Conservation Planning.
                                  Her master’s group project is focused on projecting the impacts of resource extraction on wildlife habitat
                                  in the Greater Chilkat Watershed in Southeastern Alaska.')),
                                  )),
-
 
                                       tabPanel("The Data")
                            ), # end navbar menu with more icon
