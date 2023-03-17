@@ -89,13 +89,13 @@ ui <- fluidPage(theme="ocean.css",
                                                                  of Fish and Wildlife (CDFW). The Black Bear Aware project aims to model likely
                                                                  regions of human-black bear conflict and inform agencies like CDFW on where to
                                                                  focus prevention, education, and mediation efforts. Learn more about the Black Bear
-                                                                 Aware project ",a("here.",
+                                                                 Aware project ",a("here",
                                                                                    href = 'https://bren.ucsb.edu/projects/black-bear-aware-predicting-human-black-bear-conflict-likelihood-changing-climate')," and in the About the Data tab."),
                                                    h2("Reporting and Preventing Human-Wildlife Conflict:"),
 
                                                               h4("Curious what the Wildlife Incident Reporting (WIR) form looks like?
                                                                  Have a wildlife encounter you want to share with CDFW?
-                                                                 Check out the WIR system ",a("here.",href = 'https://apps.wildlife.ca.gov/wir'),"."),
+                                                                 Check out the WIR system ",a("here.",href = 'https://apps.wildlife.ca.gov/wir')," "),
                                                               h4("Explore CDFW's informational human-wildlife conflict page ",a("here",href = 'https://wildlife.ca.gov/Conservation/Laboratories/Wildlife-Health/HWC-Program#551962502-black-bear'),"."),
                                                               ), #end sidebar layout
                                                mainPanel(h1("Purpose of the Black Bear Aware Shiny App"),
@@ -151,7 +151,48 @@ ui <- fluidPage(theme="ocean.css",
                                  in the Greater Chilkat Watershed in Southeastern Alaska.')),
                                  )),
 
-                                      tabPanel("The Data")
+                                      tabPanel("The Data",
+                                              h1("About the Data"),
+                                              h6("Data provided by the California Department of Fish and Wildlife (CDFW):"),
+                                              h5("Conflict data came from the California Department of Fish and Wildlife’s (CDFW)
+                                                 online wildlife incident reporting system (WIR). The general public can use
+                                                 this online database to report black bear interactions that fall into
+                                                 4 categories: depredation, general nuisance, potential human conflict,
+                                                 or sightings. Reports from the WIR system include the latitude and longitude
+                                                 of the points and the date of the interaction, along with record numbers and
+                                                 the details of each event. The online WIR system has been active since 2016, and
+                                                 CDFW provided WIR data from 2016 to February 2022."),
+                                              h6("Types of conflict:"),
+                                              h5("Depredation- Indicates that Black Bear has damaged human property/livestock,
+                                                 and has reported damages to CDFW biologist. Individuals reporting depredation
+                                                 by a black bear can apply for a take permit to kill the bear."),
+                                              h5("General nuisance- Bear behavior that is generally inconvenient or harmful
+                                                 to human property/livestock."),
+                                              h5("Potential human conflict- Recorded bear behavior that indicates bears
+                                                 might be habituated to human presence and more likely to utilize human spaces."),
+                                              h5("Sighting- Reports of a bear sighting. While a sighting may not indicate a direct
+                                                 conflict, reported sightings provide information about bears that are utilizing
+                                                 human spaces and are of sufficient concern to be reported to the state management agency."),
+
+                                              h6("Conflict Likelihood Maps produced by Black Bear Aware Team:"),
+                                              h5("In partnership with the California Department of Fish and Wildlife, the Black Bear Aware
+                                                 team created a model to predict the likelihood of human-black bear conflict in California.
+                                                 The Black Bear Aware predictive model replicates and builds upon methodology found in Hagani
+                                                 et al., (2021), “Mapping and modeling human-black bear interactions in the Catskills region of
+                                                 New York”. Hagani et al. used a resource selection probability function (RSPF) to model conflict.
+                                                 The RSPF is a common function in spatial ecology, often used to study large carnivore distribution."),
+                                              h5("The Black Bear Aware team built a model in RStudio based on the variables provided in the
+                                                 Hagani et al. paper and improved the fit of the model by including fire and drought climate
+                                                 variables. The most parsimonious model was selected, which used the following variables:
+                                                 elevation, land cover, distance to forests, population density, distance to recreational areas,
+                                                 distance to streams, terrain ruggedness, distance to urban areas, distance to recent fires, and drought."),
+                                              h5("The output of this model is a raster map of California that displays the likelihood of conflict from 0%
+                                                 to 100% likely. By integrating climate predictions for 2030, the team also produced a map of the likelihood
+                                                 of conflict across California in 2030. These maps can be explored under the “Projections” tab."),
+                                              h5("Reference: Hagani, J. S., Kross, S. M., Clark, M., Wynn-Grant, R., & Blair, M. (2021).
+                                                 Mapping and modeling human-black bear interactions in the Catskills region of New York
+                                                 using resource selection probability functions. PLOS ONE, 16(9), e0257716.")
+                                              ) #end data tab bar
                            ), # end navbar menu with more icon
 
                            tabPanel("Exploration", #this is how we add tabs.
@@ -174,15 +215,30 @@ ui <- fluidPage(theme="ocean.css",
                                                      choices = unique(bear_data_csv$confirmed_category), #because we've typed unique here, we don't need to list out the species. WE can do the same thing for types of conflict
                                                      selected = c("Depredation", "General Nuisance", "Potential Human Conflict", "Sighting")
                                                    ),
-                                                   h3("Types of Conflict:"),
-                                                   h5("An important note"),
+
                                       ), #End sidebarPanel widgets
                                       mainPanel(h1("Human-black bear conflict observations in California"),
-                                                h5("The data displayed below shows reports of human-black bear conflict across California
-                                                   as recorded by the California department of Fish and Wildlife (CDFW) from 2016 to March of 2022. Data is recorded by CDFW's Wildlife Incident Reporting System (WIR)."),
-                                                h5("Maybe some info about the total number of observations? like n="),
+                                                h6("Types of Conflict"),
+                                                h5("Depredation- Indicates that Black Bear has damaged human
+                                                   property/livestock, and has reported damages to CDFW biologist.
+                                                   Individuals reporting depredation by a black bear can apply
+                                                   for a take permit to kill the bear."),
+                                                h5("General nuisance- Bear behavior that is generally inconvenient or
+                                                   harmful to human property/livestock."),
+                                                h5("Potential human conflict- Recorded bear behavior that indicates
+                                                   bears might be habituated to human presence and more likely to utilize
+                                                   human spaces."),
+                                                h5("Sighting- Reports of a bear sighting. While a sighting may not
+                                                   indicate a direct conflict, reported sightings provide information
+                                                   about bears that are utilizing human spaces and are of sufficient
+                                                   concern to be reported to the state management agency."),
                                         plotOutput("conflict_plot"),
-                                        p("Figure 1. Wildlife Conflict observations since 2016 collected by the California's Department of Fish & Wildlife (n=4665)")
+                                        h5("Figure 1. The data displayed above shows counts of human-black bear conflict across California
+                                                   as recorded by the California department of Fish and Wildlife (CDFW) from 2016 to February
+                                           of 2022. Data is recorded by CDFW's Wildlife Incident Reporting System (WIR). Over that time period,
+                                           4,663 human-black bear interactions were recorded."),
+
+
                                       ) # endconflict exploration mainPanel
                                     ) #end sidebar (tab1) layout
                            ),
@@ -221,9 +277,16 @@ ui <- fluidPage(theme="ocean.css",
                       navbarMenu("Projections",
                            tabPanel("Modeling Present Conflict",
                                     sidebarPanel("",
+                                                 h2("Using this tool:"),
+                                                 h3("Use the interactive map interface to zoom into regions of
+                                                    California and explore conflict likelihood."),
+                                                 h3("Observation points of human-black bear conflict from 2016
+                                                    to 2022 as recorded in the WIR can be overlapped using the
+                                                    toggle switch to assess the difference between reported
+                                                    (actual) conflict and predicted conflict."),
                                                  materialSwitch(
                                                    inputId = "overlap_switch1",
-                                                   label = "Overlap with WIR Observed Conflict Occurrences:",
+                                                   label = "Overlap with WIR Recorded Conflict Points:",
                                                    value = FALSE,
                                                    status = "warning"
                                                  )
