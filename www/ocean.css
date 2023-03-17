@@ -4,60 +4,168 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
 
 /* updating background color and font type and size */
-body{
-  background-color: #85936E;
+
+.navbar {
+  color: #354138; /* blackish*/
+  font-family: 'Lato', sans-serif;
+  font-weight: 500;
+  font-style: bold;
+  font-size: 18px;
+  background-color: #a3a58e ; /* light green*/
+    left: 0;
+    right: 0;
+}
+
+.navbar-brand {
+background-color: #D5CFBE;
+color: #705d5c;
+font-weight: 700;
+display: inline-block;
+  font-size: 24px;
+  @include hover-focus {
+    text-decoration: none;
+  }
+}
+
+.navbar-default .navbar-nav > li > a:hover{
+    background-color: #D5CFBE;
+    color: #2A3759;
+}
+
+.navbar-default .navbar-nav >li > a:active {
+   background-color: #D5CFBE;
+    color: #2A3759;
+
+}
+
+
+
+body { /* seems to be navigation bar? */
+  background-color: #212517; /* blackish*/
+  font-family: 'Lato', sans-serif;
+  font-weight: 100;
+  font-style: normal;
+  font-size: 18px;
+  line-height: 5;
+  letter-spacing: -.02em;
+  color: #a3a58e; /* lightish green */
+  -webkit-font-smoothing: antialiased;
+}
+
+body { /* of main body */
+  background-color: #354138; /* darker green */
+  font-family: 'Lato', sans-serif;
+  font-weight: 300;
+  font-style: normal;
+  font-size: 18px;
+  line-height: 5;
+  letter-spacing: -.02em;
+  color: #a3a58e; /* lightish green */
+  -webkit-font-smoothing: antialiased;
+}
+
+
+h1 { /* big titles for descriptions */
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 32px;
+  line-height: 1.15;
+  letter-spacing: -.02em;
+  color: #a3a58e;
+  -webkit-font-smoothing: antialiased;
+}
+
+h2{ /* side bar title */
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1.15;
+  letter-spacing: -.02em;
+  color: #2A3759; /* dark blue */
+  text-align: center;
+  -webkit-font-smoothing: antialiased;
+}
+
+h3{ /* subtitles / titles for items */
   font-family: 'Lato', sans-serif;
   font-weight: 700;
   font-style: normal;
   font-size: 18px;
   line-height: 1.15;
   letter-spacing: -.02em;
-  color: black;
-  -webkit-font-smoothing: antialiased
+  color: #374709;
+  -webkit-font-smoothing: antialiased;
 
-
-body {
-  background-color: darkolivegreen;
 }
 
-h1 {
-  font-family: 'Quicksand', sans-serif;
-  font-weight: 700;
+h4{ /* item text body */
+  font-family: 'Lato', sans-serif;
+  font-weight: 400;
   font-style: normal;
-  font-size: 38px;
+  font-size: 16px;
   line-height: 1.15;
   letter-spacing: -.02em;
-  color: antiquewhite;
+  color: #6F6878;
   -webkit-font-smoothing: antialiased;
+
+}
+
+
+h5{ /* main body text */
+  font-family: 'Lato', sans-serif;
+  font-weight: 100;
+  font-style: normal;
+  font-size: 16px;
+  line-height: 1.15;
+  letter-spacing: -.02em;
+  color: #a3a58e;
+  -webkit-font-smoothing: antialiased;
+
 }
 
 
 
-/* Style the navigation bar*/
 
 
-.navbar-static-top{
-  color: black;
-  font-size: 18px;
-  background-color: #B4B297;
-  width: 100%;
+/* widget specific*/
+
+
+
+
+/* Make text visible on inputs */
+.shiny-input-container {
+  color: #474747;
 }
 
-.navbar-nav li a:hover, .navbar-nav > .active > a {
-color: antiquewhite !important;
-background-color:#8db14e!important;
-background-image: none !important;
-}
 
-/* Add responsiveness - on screens less than 500px, make the navigation links appear on top of each other, instead of next to each other */
-@media screen and (max-width: 500px) {
-  .navbar a {
-    float: none;
-    display: block;
-    width: 100%;
-    text-align: left; /* If you want the text to be left-aligned on small screens */
-  }
-}
+
+
+/* kinda understand what I'm doing a bit more -
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
