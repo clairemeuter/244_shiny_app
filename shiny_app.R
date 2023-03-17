@@ -129,6 +129,7 @@ ui <- fluidPage(theme="ocean.css",
 
                                                )), # end About the project tab pan
                                       tabPanel("The Team",
+                                               h1("Meet the Developers"),
                     #  h2('Project team'),
                       tags$style("#project-grid {display: grid;grid-template-columns: 100px 1fr;grid-gap: 10px;}"),
                       div(id = "project-grid"),
