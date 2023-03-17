@@ -122,13 +122,13 @@ h3{ /* subtitles / titles for items */
 }
 
 h4{ /* item text body */
-  font-family: 'Lato', sans-serif;
-  font-weight: 400;
+  font-family: 'Nunito Sans', sans-serif;
+  font-weight: 500;
   font-style: normal;
   font-size: 16px;
   line-height: 1.15;
   letter-spacing: -.02em;
-  color: #6F6878;
+  color: #44404a;
   -webkit-font-smoothing: antialiased;
 
 }
@@ -179,7 +179,10 @@ div.tab-content{
 
 
 
+.sidebar.materialswitch {
 
+  float:"left";
+}
 
 
 
