@@ -12,6 +12,8 @@ library(sf)
 library(terra)
 library(tmap)
 library(here)
+library(RColorBrewer)
+library(shinyjs)
 ```
 
 ```{r}
@@ -77,16 +79,47 @@ ggplot() +
     geom_histogram(data = conflict_raster_df, aes(x = lyr1))
 ```
 
+# dealing with colors
+```{r}
+# Extract the hexadecimal color values for a particular palette from
+# the RColorBrewer package, as used by ggplot's scales package. 
+
+
+
+brewer.pal(4, "YlGnBu")
+
+# [1] "#A6CEE3" "#1F78B4" "#B2DF8A" "#33A02C" "#FB9A99" "#E31A1C"
+# [7] "#FDBF6F" "#FF7F00" "#CAB2D6" "#6A3D9A" "#FFFF99" "#B15928"
+
+# to display that palette:
+display.brewer.pal(4, "YlGnBu")
+
+
+viridis::viridis(4)
+
+
+transparent_color1 <- ("#440154FF", alpha = 0.5) 
+
+  
+raster_colors <- c("#FFFFCC", "#A1DAB4", "#41B6C4", "#225EA8")
+
+raster_alpha <- c(0.5, 0.5, 1, 1)
+
+```
+
 
 ```{r}
+
 predicted_conflict_raster <- 
   tm_shape(model_conflict_raster) +
-  tm_raster(style= "order", 
+  tm_raster(breaks= seq(0, 1, by= 0.1),
             palette = "viridis",
-            title = "Probability (%)") + # order = 
+            title = "Probability (%)") + # order =
   tmap_mode(mode = "view") +
   tm_layout(legend.outside = TRUE) +
   tm_layout(title = "Modeled Probability of Human-Black Bear Conflict in California", title.size = 1.5, title.position = c("right", "top")) 
+
+
   tm_shape(bear_conflict_6414_sf) +
   tm_minimap() +
   tm_dots(col = "type",
@@ -97,7 +130,8 @@ predicted_conflict_raster
   
 actual_conflict_sf <- tm_shape(bear_conflict_6414_sf) +
   tm_dots(col = "type",
-          palette = c("darkorange","violetred1","firebrick","darkorchid1"))
+          c("#dfd60", "#aca0bd", "#778aab", "#b9cdca"))
+          # palette = c("darkorange","violetred1","firebrick","darkorchid1"))
 
 CA_county_6414_sf <- 
    tm_shape(CA_county_6414) +
@@ -164,7 +198,8 @@ bear_conflict_6414_sf <- read_sf(here("data","conflict_buffered_refined","confli
 ```{r}
 conflict_2030_raster <- 
   tm_shape(model_2030_conflict_raster) +
-  tm_raster(style= "order", palette = "viridis") + # order = 
+  tm_raster(style= "order", 
+            palette = "viridis") + # order = 
   tmap_mode(mode = "view") +
   tm_layout(legend.outside = TRUE) +
   tm_layout(title = "Modeled Probability of Human-Black Bear Conflict in California", title.size = 1.5, title.position = c("right", "top")) 

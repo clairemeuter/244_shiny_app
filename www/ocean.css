@@ -1,7 +1,7 @@
 
 /* importing fancy google font */
 
-@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300&family=Lato&family=Montserrat:wght@200&family=Mukta:wght@200&family=Nunito+Sans:wght@300&family=Poppins:wght@300&display=swap');
 
 /* updating background color and font type and size */
 
@@ -14,25 +14,46 @@
   background-color: #a3a58e ; /* light green*/
     left: 0;
     right: 0;
+    width: 100%;
 }
-
 .navbar-brand {
 background-color: #D5CFBE;
-color: #705d5c;
+font-family: 'Lato', sans-serif;
+color: #705d5c; /* brown*/
 font-weight: 700;
 display: inline-block;
   font-size: 24px;
-  @include hover-focus {
-    text-decoration: none;
   }
 }
 
-.navbar-default .navbar-nav > li > a:hover{
-    background-color: #D5CFBE;
+.dropdown-toggle:hover {
+
+  background-color: #D5CFBE;
     color: #2A3759;
 }
 
-.navbar-default .navbar-nav >li > a:active {
+.dropdown-toggle:active{
+
+  background-color: #D5CFBE;
+    color: #2A3759;
+}
+
+
+.dropdown-menu li > a:hover{
+
+  background-color: #D5CFBE;
+    color: #2A3759;
+}
+
+.dropdown-menu li > a:active{
+
+  background-color: #D5CFBE;
+    color: #2A3759;
+}
+
+
+
+.navbar-default .navbar-nav >li > a:hover {
    background-color: #D5CFBE;
     color: #2A3759;
 
@@ -46,7 +67,7 @@ body { /* seems to be navigation bar? */
   font-weight: 100;
   font-style: normal;
   font-size: 18px;
-  line-height: 5;
+  line-height: 1.15;
   letter-spacing: -.02em;
   color: #a3a58e; /* lightish green */
   -webkit-font-smoothing: antialiased;
@@ -58,7 +79,7 @@ body { /* of main body */
   font-weight: 300;
   font-style: normal;
   font-size: 18px;
-  line-height: 5;
+  line-height: 1.15;
   letter-spacing: -.02em;
   color: #a3a58e; /* lightish green */
   -webkit-font-smoothing: antialiased;
@@ -67,12 +88,12 @@ body { /* of main body */
 
 h1 { /* big titles for descriptions */
   font-family: 'Lato', sans-serif;
-  font-weight: 700;
+  font-weight: 600;
   font-style: normal;
   font-size: 32px;
   line-height: 1.15;
   letter-spacing: -.02em;
-  color: #a3a58e;
+  color: #DDBB98; /* terracotta */
   -webkit-font-smoothing: antialiased;
 }
 
@@ -114,35 +135,34 @@ h4{ /* item text body */
 
 
 h5{ /* main body text */
-  font-family: 'Lato', sans-serif;
-  font-weight: 100;
+  font-family: 'Nunito Sans', sans-serif;
+  font-weight: 250;
   font-style: normal;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.15;
   letter-spacing: -.02em;
-  color: #a3a58e;
+  color: #C1C39B; /* light palette green */
   -webkit-font-smoothing: antialiased;
 
 }
 
 
+div.tab-content{
 
-
+  font-family: 'Lato', sans-serif;
+  font-weight: 100;
+  font-style: bold;
+  font-size: 16px;
+  line-height: 1.15;
+  letter-spacing: -.02em;
+  color: #354138;
+  -webkit-font-smoothing: antialiased;
+}
 
 /* widget specific*/
 
 
 
-
-/* Make text visible on inputs */
-.shiny-input-container {
-  color: #474747;
-}
-
-
-
-
-/* kinda understand what I'm doing a bit more -
 
 
 
