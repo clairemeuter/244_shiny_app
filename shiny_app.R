@@ -235,6 +235,8 @@ ui <- fluidPage(theme="ocean.css",
                                                    indicate a direct conflict, reported sightings provide information
                                                    about bears that are utilizing human spaces and are of sufficient
                                                    concern to be reported to the state management agency."),
+                                                br(),
+                                                br(),
                                         plotOutput("conflict_plot"),
                                         h5("Figure 1. The data displayed above shows counts of human-black bear conflict across California
                                                    as recorded by the California department of Fish and Wildlife (CDFW) from 2016 to February
@@ -387,7 +389,7 @@ server <- function(input, output){
             axis.title.y = element_text(size=18, color = "#bab86c"),
             legend.title = element_text(size = 18, color = "#bab86c"),
             legend.text = element_text(size = 16, color = "#bab86c"),
-            plot.background = element_rect(fill = "#354138"), # change plot background color to page color
+            plot.background = element_rect(fill = "#354138",color = "#354138"), # change plot background color to page color
             legend.background = element_rect(fill = "#354138"))
   })
 
