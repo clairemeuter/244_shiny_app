@@ -104,6 +104,7 @@ ui <- fluidPage(theme="ocean.css",
 
                                                    h2("About the Data"),
                                                    br(),"",
+
                                                    h4("The data for this project is provided by the ")),
                                       mainPanel(h1("Purpose of the App"),
                                                 h5("This app is intended to allow users to explore human-black bear conflict across California.
@@ -115,6 +116,7 @@ ui <- fluidPage(theme="ocean.css",
                                                 div(),
                                                 h5("Information about CDFW"),
                                                 h5("Info about data"),
+
                                                 br(),
                                                 h5("For more information on this project, see the",  a("UCSB's Bren School Master's Directory", href = 'https://bren.ucsb.edu/projects/black-bear-aware-predicting-human-black-bear-conflict-likelihood-changing-climate'), "."),
                                                 br(),
