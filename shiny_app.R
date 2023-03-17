@@ -376,18 +376,19 @@ server <- function(input, output){
       geom_bar(aes(fill = confirmed_category, x = !!sym(x_var))) + #convert the x_var string into a variable name for aes
       x_scale +
       scale_fill_manual(breaks = c("Depredation", "General Nuisance", "Potential Human Conflict", "Sighting"),
-                        values = c("pink", "peru", "dodgerblue", "darkolivegreen")) +
+                        values = c("#df7d60", "#aca0bd", "#778aab", "#b9cdca")) +
       labs(y = "Number of observations",
            fill = "Conflict Type", x = "") +
      # x_limits +
       coord_cartesian(ylim = c(0, NA)) +
       theme_bw() +
-      theme(axis.text.x = element_text(size = 16),
-            axis.text.y = element_text(size = 18),
-            axis.title.y = element_text(size=18),
-            legend.title = element_text(size = 18),
-            legend.text = element_text(size = 16),
-            plot.background = element_rect(fill = "#BFD5E3")) # change plot background color to page color
+      theme(axis.text.x = element_text(size = 16, color = "#bab86c"),
+            axis.text.y = element_text(size = 18, color = "#bab86c"),
+            axis.title.y = element_text(size=18, color = "#bab86c"),
+            legend.title = element_text(size = 18, color = "#bab86c"),
+            legend.text = element_text(size = 16, color = "#bab86c"),
+            plot.background = element_rect(fill = "#354138"), # change plot background color to page color
+            legend.background = element_rect(fill = "#354138"))
   })
 
 
