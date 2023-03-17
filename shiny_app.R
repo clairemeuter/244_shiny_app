@@ -340,7 +340,7 @@ output$reactive_df <- renderDT(contents())
        over1 <- over1 +
          tm_shape(bear_conflict_6414_sf) +
          tm_dots(col = "type",
-                 palette = c("darkorange","violetred1","firebrick","darkorchid1"))
+                 palette = c("#dfd60","#aca0bd","#778aab","#b9cdca"))
     }
     over1
   })
@@ -365,7 +365,7 @@ output$reactive_df <- renderDT(contents())
       over2 <- over2 +
         tm_shape(bear_conflict_6414_sf) +
         tm_dots(col = "type",
-                palette = c("darkorange","violetred1","firebrick","darkorchid1"))
+                palette = c("#dfd60","#aca0bd","#778aab","#b9cdca"))
     }
     over2
   })
