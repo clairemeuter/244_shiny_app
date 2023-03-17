@@ -82,7 +82,7 @@ ui <- fluidPage(theme="ocean.css",
                            navbarMenu("About", icon = icon("info-circle"),
                                       tabPanel("The Project",
                                                sidebarLayout(
-                                                 sidebarPanel(h2("What is the ''Black Bear Aware'' project?"),
+                                                 sidebarPanel(h2("The Black Bear Aware Project"),
                                                               h4("Black Bear Aware is a master’s group thesis project from the Bren School
                                                                  of Environmental Science and Management at the University of California,
                                                                  Santa Barbara. This project is in collaboration with the California Department
@@ -92,32 +92,35 @@ ui <- fluidPage(theme="ocean.css",
                                                                  Aware project ",a("here.",
                                                                                    href = 'https://bren.ucsb.edu/projects/black-bear-aware-predicting-human-black-bear-conflict-likelihood-changing-climate')," and in the About the Data tab."),
                                                    h2("Reporting and Preventing Human-Wildlife Conflict:"),
-                                                              br(),
+
                                                               h4("Curious what the Wildlife Incident Reporting (WIR) form looks like?
                                                                  Have a wildlife encounter you want to share with CDFW?
                                                                  Check out the WIR system ",a("here.",href = 'https://apps.wildlife.ca.gov/wir'),"."),
                                                               h4("Explore CDFW's informational human-wildlife conflict page ",a("here",href = 'https://wildlife.ca.gov/Conservation/Laboratories/Wildlife-Health/HWC-Program#551962502-black-bear'),"."),
                                                               ), #end sidebar layout
-                                               mainPanel(h6("Purpose of the App"),
-                                                         h5("This app is intended to allow users to explore human-black bear conflict across California.
-                                                   Human-black bear conflict can be defined as any interaction between humans and black bears
-                                                   that is perceived as a negative interaction by either party. Typically, human-black bear conflict looks like bears utilizing human resources for food,
-                                                   often livestock and trash."),
+                                               mainPanel(h1("Purpose of the Black Bear Aware Shiny App"),
+                                                         h5("This app allows users to explore human-black bear conflict data across California.
+                                                            Residents of California can explore what conflict reports are like in their
+                                                            county and see how likely conflict is in their region. Human-black bear conflict
+                                                            can be defined as any interaction between humans and black bears that is perceived
+                                                            as a negative interaction by either party. Typically, human-black bear conflict
+                                                            looks like bears utilizing human resources for food, often livestock and trash."),
                                                    h6("Navigating the App"),
-                                                   h5("Click on the exploration tab to see the types of human-black bear conflict recorded by the California Department of Fish and Wildlife
-                                                      from 2016 to early 2022. In the Mapping Conflict tab, explore recorded human-black bear conflict across California by county and year.
-                                                      Finally, see the results of modeling for human-black bear conflict across California in the projections tab. Select “Modeling Present Conflict”
-                                                      to see the % likelihood of human-black bear conflict across California under present-day environmental conditions. Select “Conflict in 2030” to
-                                                      see the % likelihood of human-black bear conflict across California in the year 2030, with environmental conditions based on climate projections."),
+                                                   h5("Click on the exploration tab to see the types of human-black bear
+                                                      conflict recorded by the California Department of Fish and Wildlife
+                                                      from 2016 to early 2022. In the Mapping Conflict tab, explore recorded
+                                                      human-black bear conflict across California by county and year.
+                                                      Finally, see the results of modeling for human-black bear conflict
+                                                      across California in the projections tab. Select “Modeling Present
+                                                      Conflict” to see the % likelihood of human-black bear conflict across
+                                                      California under present-day environmental conditions. Select
+                                                      “Conflict in 2030” to see the % likelihood of human-black bear
+                                                      conflict across California in the year 2030, with environmental
+                                                      conditions based on climate projections. Visit About <- The Data to learn more
+                                                      about modeling liklihood of human-black bear conflict in California."),
 
                                                    div(img(src = "dumpster_bear.webp", width = '500px')),
-                                                   div(),
-                                                   h5("Information about CDFW"),
-                                                   h5("Info about data"),
 
-                                                   br(),
-                                                   h5("For more information on this project, see the",  a("UCSB's Bren School Master's Directory", href = 'https://bren.ucsb.edu/projects/black-bear-aware-predicting-human-black-bear-conflict-likelihood-changing-climate'), "."),
-                                                   br()
 
                                                ), #end mainPanel
 
@@ -128,21 +131,21 @@ ui <- fluidPage(theme="ocean.css",
                       div(id = "project-grid"),
                           fluidRow(column(4,
                                          div(img(src='claire.jpg', style = 'border-radius: 50%', width = '100px'), style="text-align: center;"),
-                                          h2('Claire Meuter'),
+                                          h6('Claire Meuter'),
                                           h5('Claire Meuter is a 2nd year MESM student specializing in Conservation Planning.
                                              She is data manager for her masters group project, Black Bear Aware, which studies human-black bear conflict in California.
                                              She is excited to combine her research results with the Shiny app interface! ')), #end Claire bio
 
                                    column(4,
                                           div(img(src='grace.jpeg', style = 'border-radius: 50%', width = '100px'), style="text-align: center;"), #end claire bio
-                                          h2('Grace Bianchi'),
+                                          h6('Grace Bianchi'),
                                           h5('Grace Bianchi is a 2nd year MESM student specializing in Energy & Climate and Pollution, Prevention, & Remediation.
                                  Her master’s group project focused on creating model to identify the best regions in the United States for rooftop PV on
                                  apartment buildings based on investment favorability.')), # end grace bio
 
                                  column(4,
                                         div(img(src='Katheryn.jpeg', style = 'border-radius: 50%', width = '110px', height = "145px"), style="text-align: center;"),
-                                         h2('Katheryn Moya'),
+                                         h6('Katheryn Moya'),
                                           h5('Katheryn Moya is a 2nd year MESM student specializing in Conservation Planning.
                                  Her master’s group project is focused on projecting the impacts of resource extraction on wildlife habitat
                                  in the Greater Chilkat Watershed in Southeastern Alaska.')),
@@ -202,7 +205,7 @@ ui <- fluidPage(theme="ocean.css",
 
                                     ), # end sidebar panel
                                     mainPanel(h1("Recorded Conflict Map"),
-                                              br(),
+
                                               h5("The data below spatial displays reports of human-black bear conflict across California
                                                  as recorded by the California Department of Fish and Wildlife (CDFW) from 2016 to March 2022.
                                                  Data is recorded by CDFW's Wildlife Incident Reporting System (WIR)."),
