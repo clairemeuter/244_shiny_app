@@ -466,7 +466,10 @@ output$reactive_df <- renderDT(contents())
   output$raster_conflict_map <- renderTmap({
 
    over1 <- tm_shape(model_conflict_raster) +
-      tm_raster(style= "order", palette = "viridis", title = "Conflict Probability") + # order =
+      tm_raster(style= "equal",
+                n = 10,
+                palette = "viridis",
+                title = "Conflict Probability") + # order =
       tmap_mode(mode = "view") +
       tm_layout(title = "Present Human-Black Bear Conflict Probability in CA",
                 title.size = 1.5,
@@ -493,7 +496,8 @@ output$reactive_df <- renderDT(contents())
   output$raster_2030_conflict_map <- renderTmap({
 
     over2 <- tm_shape(model_2030_conflict_raster) +
-      tm_raster(style= "order",
+      tm_raster(style= "equal",
+                n = 10,
                 palette = "viridis",
                 title = "Conflict Probability") + # order =
       tmap_mode(mode = "view") +
