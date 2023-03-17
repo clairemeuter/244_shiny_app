@@ -27,7 +27,7 @@ display: inline-block;
   }
 }
 
-.navbar-default .navbar-nav > li > a:hover{
+.navbar-default .navbar-nav > li > a:hover a:active{
     background-color: #D5CFBE;
     color: #2A3759;
 }
@@ -46,7 +46,7 @@ body { /* seems to be navigation bar? */
   font-weight: 100;
   font-style: normal;
   font-size: 18px;
-  line-height: 5;
+  line-height: 1.15;
   letter-spacing: -.02em;
   color: #a3a58e; /* lightish green */
   -webkit-font-smoothing: antialiased;
@@ -58,7 +58,7 @@ body { /* of main body */
   font-weight: 300;
   font-style: normal;
   font-size: 18px;
-  line-height: 5;
+  line-height: 1.15;
   letter-spacing: -.02em;
   color: #a3a58e; /* lightish green */
   -webkit-font-smoothing: antialiased;
@@ -72,7 +72,7 @@ h1 { /* big titles for descriptions */
   font-size: 32px;
   line-height: 1.15;
   letter-spacing: -.02em;
-  color: #a3a58e;
+  color: #DDBB98; /* terracotta */
   -webkit-font-smoothing: antialiased;
 }
 
@@ -117,32 +117,31 @@ h5{ /* main body text */
   font-family: 'Lato', sans-serif;
   font-weight: 100;
   font-style: normal;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.15;
   letter-spacing: -.02em;
-  color: #a3a58e;
+  color: #C1C39B; /* light palette green */
   -webkit-font-smoothing: antialiased;
 
 }
 
 
+div.tab-content{
 
-
+  font-family: 'Lato', sans-serif;
+  font-weight: 100;
+  font-style: bold;
+  font-size: 16px;
+  line-height: 1.15;
+  letter-spacing: -.02em;
+  color: #354138;
+  -webkit-font-smoothing: antialiased;
+}
 
 /* widget specific*/
 
 
 
-
-/* Make text visible on inputs */
-.shiny-input-container {
-  color: #474747;
-}
-
-
-
-
-/* kinda understand what I'm doing a bit more -
 
 
 
